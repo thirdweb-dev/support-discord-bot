@@ -1,3 +1,3 @@
-# BuildeRadio
+# Support Fren
 
-Radio Discord Bot for Builders!
+Support fren for thirdweb community.
