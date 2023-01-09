@@ -1,0 +1,21 @@
+{
+  "name": "builderadio-discord-bot",
+  "version": "1.0.0-alpha",
+  "description": "A music discord bot for builders",
+  "main": "src/bot.ts",
+  "author": "Waren Gonzaga",
+  "scripts": {
+    "start": "ts-node ."
+  },
+  "license": "GPL-3.0",
+  "private": true,
+  "dependencies": {
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3"
+  }
+}
