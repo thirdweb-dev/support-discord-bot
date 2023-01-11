@@ -1,0 +1,12 @@
+{
+    "support_role_id": "000",
+    "support_user_id": "000",
+    "support_main_channel_id": "000",
+    "support_activity_channel_id": "000",
+    "support_log_channel_id": "000",
+    "support_thread_archive_duration": "60",
+    "support_thread_intro_message": "Hello, our staff will get back to you asap!",
+    "support_thread_reminder_message": "Please be patient, our staff will respond to you asap.",
+    "support_thread_outro_message": "Happy building!",
+    "support_dev_mode": "true"
+}

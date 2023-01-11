@@ -1,11 +1,12 @@
 {
-  "name": "builderadio-discord-bot",
+  "name": "thirdweb-support-discord-bot",
   "version": "1.0.0-alpha",
-  "description": "A music discord bot for builders",
+  "description": "Discord threads-based support for the thirdweb community.",
   "main": "src/bot.ts",
   "author": "Waren Gonzaga",
   "scripts": {
-    "start": "ts-node ."
+    "start": "ts-node .",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/bot.ts"
   },
   "license": "GPL-3.0",
   "private": true,
@@ -16,6 +17,6 @@
   "devDependencies": {
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.4"
   }
 }
