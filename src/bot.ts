@@ -22,7 +22,7 @@ const client = new Client({
 client.on('messageCreate', (message) => {
 	if (message.author.bot) return; 
 
-	if (message.content === 'Hello' || message.content === 'Hi') {
+	if (message.content === 'hello' || message.content === 'hi') {
 		message.reply('How are you ' + message.author.username + '!');
 	}
 
@@ -30,20 +30,20 @@ client.on('messageCreate', (message) => {
 	// thread channel = 11
 	for (const words of filters.keywords) {
 		if (message.content !== '?') {
-			if (message.channel.type == 0 && message.content.endsWith('?') || message.content.includes(words)) {
-				// message.startThread({
-				// 	name: 'support - ' + message.author.username,
-				// 	autoArchiveDuration: 60,
-				// 	reason: 'Just a thread',
-				// });
-				message.reply('Looks like you need a support!');
+			if (MessageType.Default && message.content.endsWith('?') || message.content.includes(words)) {
+				message.startThread({
+					name: 'support - ' + message.author.username,
+					autoArchiveDuration: 60,
+					reason: 'Someone need a support',
+				});
+				// message.reply('Looks like you need a support!');
 				break;
 			}
 		}
 	}
 
 	if (MessageType.Reply) {
-		console.log('===============');
+		console.log('================================');
 		console.log('The message is a reply!');
 	}
 
