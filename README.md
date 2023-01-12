@@ -1,3 +1,3 @@
-# Support Fren
+# Support Discord Bot for thirdweb
 
-Support fren for thirdweb community.
+The next generation Discord bot for providing support to your next generation Discord community.

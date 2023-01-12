@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, MessageType } from 'discord.js';
+import { Client, Events, GatewayIntentBits, messageLink, MessageType } from 'discord.js';
 import config from './config.json';
 import filters from './filters.json';
 import dotenv from 'dotenv';
@@ -6,8 +6,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Discord Bot Tokens
-const { DISCORD_BOT_TOKEN_DEV } = process.env;
-const token = DISCORD_BOT_TOKEN_DEV;
+const { 
+	DISCORD_BOT_TOKEN,
+	SUPPORT_ROLE_ID,
+	SUPPORT_MANAGER_USER_ID,
+	SUPPORT_CHANNEL_ID,
+	SUPPORT_ACTIVITY_ID,
+	SUPPORT_LOGS_ID
+} = process.env;
+
+const token = DISCORD_BOT_TOKEN;
 
 // Discord Bot Instance
 const client = new Client({ 
@@ -30,13 +38,11 @@ client.on('messageCreate', (message) => {
 	// thread channel = 11
 	for (const words of filters.keywords) {
 		if (message.content !== '?') {
-			if (MessageType.Default && message.content.endsWith('?') || message.content.includes(words)) {
+			if (MessageType.Default && message.content.includes(words) || message.content.endsWith('?')) {
 				message.startThread({
-					name: 'support - ' + message.author.username,
-					autoArchiveDuration: 60,
-					reason: 'Someone need a support',
+					name: '🟢 ' + message.author.username,
+					autoArchiveDuration: 60
 				});
-				// message.reply('Looks like you need a support!');
 				break;
 			}
 		}
@@ -45,6 +51,8 @@ client.on('messageCreate', (message) => {
 	if (MessageType.Reply) {
 		console.log('================================');
 		console.log('The message is a reply!');
+	} else {
+		console.log('The message is not a reply!');
 	}
 
 	// if (message.channel.type == 11 ) {
@@ -58,7 +66,23 @@ client.on('messageCreate', (message) => {
 		console.log('Channel Type: ' + message.channel.type);
 		console.log('Channel ID: ' + message.channelId);
 	}
-})
+});
+
+// Listen to Thread Creation
+client.on('threadCreate', async (thread, newlyCreated) => {
+
+	// Get the Thread Info
+	const starterMessage = await thread.fetchStarterMessage({
+		cache: false
+	});
+
+	// Send the message to the newly created thread
+	await thread.send('Hey, <@' + starterMessage?.author.id + '>! A member of <@&' + SUPPORT_ROLE_ID + '> team ' + config.support_thread_intro_message);
+    
+	// Thread Logs
+	console.log(`threadCreate: ${thread}`);
+	console.log(starterMessage);
+});
 
 // Discord Bot Log Event
 client.once(Events.ClientReady, bot => {
