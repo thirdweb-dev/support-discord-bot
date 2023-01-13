@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, messageLink, MessageType } from 'discord.js';
+import { ActivityType, Client, Events, GatewayIntentBits, MessageType } from 'discord.js';
 import config from './config.json';
 import filters from './filters.json';
 import dotenv from 'dotenv';
@@ -34,10 +34,8 @@ client.on('messageCreate', (message) => {
 		message.reply('How are you ' + message.author.username + '!');
 	}
 
-	// text channel = 0
-	// thread channel = 11
 	for (const words of filters.keywords) {
-		if (message.content !== '?') {
+		if (!message.content.startsWith('?')) {
 			if (MessageType.Default && message.content.includes(words) || message.content.endsWith('?')) {
 				message.startThread({
 					name: '🟢 ' + message.author.username,
@@ -72,20 +70,26 @@ client.on('messageCreate', (message) => {
 client.on('threadCreate', async (thread, newlyCreated) => {
 
 	// Get the Thread Info
-	const starterMessage = await thread.fetchStarterMessage({
+	const threadMessage = await thread.fetchStarterMessage({
 		cache: false
 	});
 
 	// Send the message to the newly created thread
-	await thread.send('Hey, <@' + starterMessage?.author.id + '>! A member of <@&' + SUPPORT_ROLE_ID + '> team ' + config.support_thread_intro_message);
+	await thread.send('Hey, <@' + threadMessage?.author.id + '>! ' + config.support_thread_intro_message);
     
 	// Thread Logs
 	console.log(`threadCreate: ${thread}`);
-	console.log(starterMessage);
+	console.log(threadMessage);
 });
 
 // Discord Bot Log Event
 client.once(Events.ClientReady, bot => {
+	client.user?.setPresence({
+		activities: [{
+			name: 'for suppport!',
+			type: ActivityType.Watching
+		}]
+	})
 	console.log(`Ready! Logged in as ${bot.user.tag}`);
 });
 
