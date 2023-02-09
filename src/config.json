@@ -1,7 +1,4 @@
 {
-    "support_thread_archive_duration": "60",
-    "support_thread_intro_message": "Our staff will respond to you as soon as possible.",
-    "support_thread_reminder_message": "Please be patient, our staff will respond to you asap.",
-    "support_thread_outro_message": "Happy building!",
-    "support_dev_mode": "true"
+    "support_role_id": "956550878813384737",
+    "emoji": "👀"
 }
