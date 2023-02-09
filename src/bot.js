@@ -1,5 +1,5 @@
 const basePath = process.cwd();
-const { ActivityType, Client, GatewayIntentBits, MessageType, Partials } = require('discord.js');
+const { ActivityType, Client, GatewayIntentBits, Partials } = require('discord.js');
 const dotenv = require('dotenv');
 const config = require(`${basePath}/src/config.json`);
 
@@ -37,6 +37,7 @@ client.on('messageCreate', (message) => {
 	}
 });
 
+// listens for any reactions to messages
 client.on('messageReactionAdd', async (reaction, user) => {
 	// upon reaction check if it is in partial structure
 	if (reaction.partial) {
@@ -51,30 +52,17 @@ client.on('messageReactionAdd', async (reaction, user) => {
 	const member = reaction.message.guild.members.cache.get(user.id);
 	const emoji = config.emoji;
 	let isSupportRole = member._roles.includes(config.support_role_id);
-
+	
+	// check if the emoji reaction is from support role
 	if (reaction.emoji.name === emoji && isSupportRole ) {
-		reaction.message.startThread({
+		// create thread and add who reacts
+		const thread = await reaction.message.startThread({
 			name: reaction.message.author.username,
 			autoArchiveDuration: 60
 		});
+		thread.members.add(user.id);
 	}
 });
-
-// listen to thread creation
-// client.on('threadCreate', async (thread, newlyCreated) => {
-
-// 	// Get the Thread Info
-// 	const threadMessage = await thread.fetchStarterMessage({
-// 		cache: false
-// 	});
-
-// 	// Send the message to the newly created thread
-// 	await thread.send('Hey, <@' + threadMessage?.author.id + '>! ' + config.support_thread_intro_message);
-    
-// 	// Thread Logs
-// 	console.log(`threadCreate: ${thread}`);
-// 	console.log(threadMessage);
-// });
 
 // discord log event
 client.once('ready', bot => {
