@@ -1,13 +1,14 @@
 const basePath = process.cwd();
 const { ActivityType, Client, GatewayIntentBits, Partials } = require('discord.js');
-const dotenv = require('dotenv');
 const config = require(`${basePath}/src/config.json`);
+const dotenv = require('dotenv');
 
 dotenv.config();
 
 // discord bot tokens
 const { 
 	DISCORD_BOT_TOKEN,
+	DISCORD_BOT_TOKEN_DEV,
 } = process.env;
 
 const token = DISCORD_BOT_TOKEN;
