@@ -1,5 +1,5 @@
 const basePath = process.cwd();
-const { ActivityType, Client, GatewayIntentBits, Partials } = require('discord.js');
+const { ActivityType, Client, ChannelType, GatewayIntentBits, Partials } = require('discord.js');
 const config = require(`${basePath}/src/config.json`);
 const dotenv = require('dotenv');
 
@@ -10,8 +10,6 @@ const {
 	DISCORD_BOT_TOKEN,
 	DISCORD_BOT_TOKEN_DEV,
 } = process.env;
-
-const token = DISCORD_BOT_TOKEN;
 
 // discord bot instents and partials
 const client = new Client({ 
@@ -45,23 +43,45 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		try {
 			await reaction.fetch();
 		} catch (error) {
-			console.error('Err: Something went wrong...', error);
+			console.error(error);
 			return;
 		}
 	}
 	// get the details from the user who react
 	const member = reaction.message.guild.members.cache.get(user.id);
-	const emoji = config.emoji;
+	const emojiAssign = config.emoji_assign;
+	const emojiClose = config.emoji_close;
 	let isSupportRole = member._roles.includes(config.support_role_id);
 	
-	// check if the emoji reaction is from support role
-	if (reaction.emoji.name === emoji && isSupportRole ) {
+	/**
+	 * assign logic from emoji reaction
+	 * check if the user is part of the allowed role before creating a thread
+	 */
+	if (reaction.emoji.name === emojiAssign && isSupportRole) {
 		// create thread and add who reacts
 		const thread = await reaction.message.startThread({
-			name: reaction.message.author.username,
+			name: `${config.emoji_status_open} ${reaction.message.author.username}`,
 			autoArchiveDuration: 60
 		});
-		thread.members.add(user.id);
+		// then add that user to the thread
+		thread.members.add(user.id, 'Assigned user to provide support');
+	}
+	/**
+	 * close logic from emoji reaction
+	 * check if the user is part of the allowed role before closing a thread
+	 */
+	if (reaction.emoji.name === emojiClose && isSupportRole) {
+		// check if the reaction is from a thread
+		if (reaction.message.channel.type === ChannelType.PublicThread) {
+			// fetch data about the thread
+			const thread = await reaction.message.channel.fetchStarterMessage();
+			// then archive and lock it
+			reaction.message.channel.edit({
+				name: `${config.emoji_status_resolved} ${thread.author.username}`,
+				archived: true,
+				locked: true
+			});
+		}
 	}
 });
 
@@ -72,9 +92,10 @@ client.once('ready', bot => {
 			name: 'for suppport!',
 			type: ActivityType.Watching
 		}]
-	})
+	});
+
 	console.log(`Ready! Logged in as ${bot.user.tag}`);
 });
 
 // log in to Discord with your client's token
-client.login(token);
+config.dev_mode ? client.login(DISCORD_BOT_TOKEN_DEV) : client.login(DISCORD_BOT_TOKEN); 

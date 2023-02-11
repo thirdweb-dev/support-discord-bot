@@ -1,4 +1,8 @@
 {
     "support_role_id": "956550878813384737",
-    "emoji": "👀"
+    "emoji_assign": "👀",
+    "emoji_close": "✅",
+    "emoji_status_open": "🟣",
+    "emoji_status_resolved": "🟢",
+    "dev_mode": false
 }
