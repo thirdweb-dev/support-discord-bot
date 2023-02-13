@@ -6,16 +6,19 @@ Dedicated thread-based support Discord bot for the thirdweb community.
 
 1. React with emoji to start a thread.
 2. Only specified role can start a thread.
+3. React with emoji or prefix command to close a thread.
 
 ## Configurations
 
 ```json
 {
-    "support_role_id": "956550878813384737",
+    "support_role_id": [
+        "956550878813384737",
+        "1074492077183860868"
+    ],
     "emoji_assign": "👀",
     "emoji_close": "✅",
-    "emoji_status_open": "🟣",
-    "emoji_status_resolved": "🟢",
+    "command_prefix": "!",
     "dev_mode": false
 }
 ```
@@ -51,4 +54,3 @@ yarn dev
 ## Todo
 
 - Analytics
-- Support multiple roles
