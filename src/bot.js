@@ -95,7 +95,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
 			const thread = await reaction.message.channel.fetchStarterMessage();
 			// then archive and lock it
 			reaction.message.channel.edit({
-				name: thread.author.username,
 				archived: true,
 				locked: true
 			});
