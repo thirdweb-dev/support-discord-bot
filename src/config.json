@@ -1,8 +1,10 @@
 {
-    "support_role_id": "956550878813384737",
+    "support_role_id": [
+        "956550878813384737",
+        "1074492077183860868"
+    ],
     "emoji_assign": "👀",
     "emoji_close": "✅",
-    "emoji_status_open": "🟣",
-    "emoji_status_resolved": "🟢",
+    "command_prefix": "!",
     "dev_mode": false
 }
