@@ -10,15 +10,14 @@ Dedicated thread-based support Discord bot for the thirdweb community.
 
 ## Configurations
 
+### Config File
+
 ```json
 {
-    "support_role_id": [
-        "956550878813384737",
-        "1074492077183860868"
-    ],
     "emoji_assign": "👀",
     "emoji_close": "✅",
     "command_prefix": "!",
+    "auto_archive_duration": 10080,
     "dev_mode": false
 }
 ```
@@ -30,6 +29,13 @@ Dedicated thread-based support Discord bot for the thirdweb community.
 | `emoji_close` | Emoji you want to use as a trigger to close and lock the thread support. |
 | `command_prefix` | A prefix you want to use with `close` command to be recognized by the bot. |
 | `dev_mode` | It should be false, unless you are developing this bot. Optional |
+
+## Environment Variables
+
+```
+DISCORD_BOT_TOKEN=<discord_bot_token>
+DISCORD_SUPPORT_ROLE_ID=<role_id>,<role_id>
+```
 
 ## Development
 
