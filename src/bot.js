@@ -112,7 +112,7 @@ const isSupportRole = (userRoleIds, supportRoleIds) => {
 client.once('ready', bot => {
 	client.user?.setPresence({
 		activities: [{
-			name: 'for suppport!',
+			name: 'for support.',
 			type: ActivityType.Watching
 		}]
 	});
