@@ -26,6 +26,7 @@ Dedicated thread-based support Discord bot for the thirdweb community.
 | `emoji_assign` | Emoji you want to use as a trigger to initiate a thread support. |
 | `emoji_close` | Emoji you want to use as a trigger to close and lock the thread support. |
 | `command_prefix` | A prefix you want to use with `close` command to be recognized by the bot. |
+| `auto_archive_duration` | Auto Archive Duration for your threads, `10080` for 1 week (in minutes). |
 
 ## Environment Variables
 
