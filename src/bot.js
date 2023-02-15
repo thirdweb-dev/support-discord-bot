@@ -79,7 +79,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		// create thread and add who reacts
 		const thread = await reaction.message.startThread({
 			name: reaction.message.author.username,
-			autoArchiveDuration: 60
+			autoArchiveDuration: config.auto_archive_duration
 		});
 		// then add that user to the thread
 		thread.members.add(user.id, 'Assigned user to provide support');
