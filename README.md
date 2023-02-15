@@ -17,39 +17,32 @@ Dedicated thread-based support Discord bot for the thirdweb community.
     "emoji_assign": "👀",
     "emoji_close": "✅",
     "command_prefix": "!",
-    "auto_archive_duration": 10080,
-    "dev_mode": false
+    "auto_archive_duration": 10080
 }
 ```
 
 | Config Name | Description |
 | --- | --- |
-| `support_role_id` | Allowed IDs to initiate creation of threads from emoji reaction. |
 | `emoji_assign` | Emoji you want to use as a trigger to initiate a thread support. |
 | `emoji_close` | Emoji you want to use as a trigger to close and lock the thread support. |
 | `command_prefix` | A prefix you want to use with `close` command to be recognized by the bot. |
-| `dev_mode` | It should be false, unless you are developing this bot. Optional |
 
 ## Environment Variables
 
-```
+```env
 DISCORD_BOT_TOKEN=<discord_bot_token>
 DISCORD_SUPPORT_ROLE_ID=<role_id>,<role_id>
 ```
 
 ## Development
 
-Set to true if you are developing the bot and has a dev version of bot (bot token for development).
-
-`dev_mode` - Development purposes, optional as long as you know what you are doing.
-
-Install the packages
+### Install the packages
 
 ```bash
 yarn install
 ```
 
-Run the bot
+### Run the bot
 
 ```bash
 yarn dev
