@@ -2,5 +2,6 @@
     "emoji_assign": "👀",
     "emoji_close": "✅",
     "command_prefix": "!",
-    "auto_archive_duration": 10080
+    "auto_archive_duration": 10080,
+    "timezone": "America/Los_Angeles"
 }
