@@ -1,8 +1,8 @@
-require('dotenv').config();
-const basePath = process.cwd();
 const { ActivityType, Client, ChannelType, GatewayIntentBits, Partials, time } = require('discord.js');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-const config = require(`${basePath}/src/config.json`);
+const config = require(`${__dirname}/config.json`);
+
+require('dotenv').config();
 
 // discord bot tokens
 const { 
