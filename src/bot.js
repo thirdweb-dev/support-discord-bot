@@ -1,4 +1,4 @@
-const { ActivityType, Client, ChannelType, GatewayIntentBits, Partials, time } = require('discord.js');
+const { ActivityType, Client, ChannelType, GatewayIntentBits, Partials } = require('discord.js');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const config = require(`${__dirname}/config.json`);
 
@@ -41,7 +41,7 @@ client.on('messageCreate', async (message) => {
 	}
 
 	// get the details from user who send command
-	const user = message.guild.members.cache.get(message.author.id);
+	const member = message.member;
 	
 	// check if the command has the prefix and includes "close"
 	if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
@@ -49,7 +49,7 @@ client.on('messageCreate', async (message) => {
 		await message.delete(); // delete the commmand message
 
 		// check if the channel is a thread and has support role
-		if (message.channel.type === ChannelType.PublicThread && hasSupportRole(user._roles, roleIDs)) {
+		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 
 			// then archive and lock it
 			message.channel.edit({
@@ -60,7 +60,7 @@ client.on('messageCreate', async (message) => {
 			// gather data
 			const threadId = message.channel.id;
 			const resolutionTime = formatTime(message.createdTimestamp);
-			const resolvedBy = user.displayName;
+			const resolvedBy = member.user.username;
 
 			// send the data
 			sendData({
@@ -72,7 +72,7 @@ client.on('messageCreate', async (message) => {
 	}
 
 	// check the the message if it is in the thread and from the support role
-	if (message.channel.type === ChannelType.PublicThread && hasSupportRole(user._roles, roleIDs)) {
+	if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 		// get details about the thread and the message
 		const threadId = message.channel.id;
 		const fetchMessages = await message.channel.messages.fetch({ after: threadId });
@@ -82,10 +82,10 @@ client.on('messageCreate', async (message) => {
 		for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
 
 			// get the member details from the author id in the data from the messages
-			const user = message.guild.members.cache.get(fetchMessagesArray[i][1].author.id);
+			const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
 
 			// check each messages for mod message, then break it if found the first message from support role
-			if (hasSupportRole(user._roles, roleIDs)) {
+			if (member.roles.cache.hasAny(...roleIDs)) {
 				
 				// check if the current message is first message inside the thread from support role
 				if (message.id === fetchMessagesArray[i][0]) {
@@ -119,7 +119,8 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		}
 	}
 	// get the details from the user who react
-	const member = reaction.message.guild.members.cache.get(user.id);
+	const guild = reaction.message.guild;
+	const member = await guild.members.fetch(user.id);
 	const emojiAssign = config.emoji_assign;
 	const emojiClose = config.emoji_close;
 	
@@ -127,15 +128,18 @@ client.on('messageReactionAdd', async (reaction, user) => {
 	 * assign logic from emoji reaction
 	 * check if the user is part of the allowed role before creating a thread
 	 */
-	if (reaction.emoji.name === emojiAssign && hasSupportRole(member._roles, roleIDs)) {
+	if (reaction.emoji.name === emojiAssign && member.roles.cache.hasAny(...roleIDs)) {
 		const threadName = reaction.message.author.username;
+
 		// check if the reaction is not from the thread
 		if (reaction.message.channel.type !== ChannelType.PublicThread) {
+
 			// create thread and add who reacts
 			const thread = await reaction.message.startThread({
 				name: threadName,
 				autoArchiveDuration: config.auto_archive_duration
 			});
+
 			// then add that user to the thread
 			thread.members.add(user.id, 'Assigned user to provide support');
 
@@ -166,17 +170,20 @@ client.on('messageReactionAdd', async (reaction, user) => {
 	 * close logic from emoji reaction
 	 * check if the user is part of the allowed role before closing a thread
 	 */
-	if (reaction.emoji.name === emojiClose && hasSupportRole(member._roles, roleIDs)) {
+	if (reaction.emoji.name === emojiClose && member.roles.cache.hasAny(...roleIDs)) {
 		// check if the reaction is from a thread
 		if (reaction.message.channel.type === ChannelType.PublicThread) {
+
 			// then archive and lock it
 			reaction.message.channel.edit({
 				archived: true,
 				locked: true
 			});
+
 			// gather data
 			const threadId = reaction.message.channel.id;
 			const resolutionTime = formatTime(reaction.message.createdTimestamp);
+
 			// send the data
 			sendData({
 				thread_id: threadId,
@@ -186,16 +193,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		}
 	}
 });
-
-/**
- * check if user roles id is allowed in the config
- * @param {array} userRoleIds - array of role ids
- * @param {array} supportRoleIds - array of role ids from env variable
- * @returns boolean
- */
-const hasSupportRole = (userRoleIds, supportRoleIds) => {
-	return userRoleIds.some(id => supportRoleIds.includes(id));
-}
 
 /**
  * sends data to the spreadsheet
