@@ -67,7 +67,7 @@ client.on('messageCreate', async (message) => {
 				thread_id: threadId,
 				resolution_time: resolutionTime,
 				resolved_by: resolvedBy
-			}, 'data2');
+			}, config.datasheet_resolve);
 		}
 	}
 
@@ -97,7 +97,7 @@ client.on('messageCreate', async (message) => {
 					sendData({
 						thread_id: threadId,
 						first_response: firstResponse
-					}, 'data1');
+					}, config.datasheet_response);
 				}
 
 				// stop the loop
@@ -145,6 +145,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
 			const question = reaction.message.content;
 			const posted = formatTime(messageTimestamp);
 			const responder = user.username;
+			const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
+			const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
+			const resolvedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_resolve}!A2:A,${config.datasheet_resolve}!C2:C},2,0))`;
 
 			// send the data
 			sendData({
@@ -152,8 +155,11 @@ client.on('messageReactionAdd', async (reaction, user) => {
 				thread_name: threadName,
 				question: question,
 				posted: posted,
-				responder: responder
-			}, 'init');
+				responder: responder,
+				first_response: firstResponse,
+				resolution_time: resolutionTime,
+				resolved_by: resolvedBy
+			}, config.datasheet_init);
 		}
 	}
 	/**
@@ -176,7 +182,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 				thread_id: threadId,
 				resolution_time: resolutionTime,
 				resolved_by: user.username
-			}, 'data2');
+			}, config.datasheet_resolve);
 		}
 	}
 });
@@ -194,7 +200,7 @@ const hasSupportRole = (userRoleIds, supportRoleIds) => {
 /**
  * sends data to the spreadsheet
  * @param {object} data - data being added as row in the spreadsheet
- * @param {string} datasheet - name of sheet where data being sent e.g. init, data1, data2
+ * @param {string} datasheet - name of sheet where data being sent e.g. init, response, resolve
  */
 const sendData = async (data, datasheet) => {
 	// authenticate
@@ -207,17 +213,17 @@ const sendData = async (data, datasheet) => {
 	const sheet = doc.sheetsByTitle[datasheet];
 
 	// check if the data will be send to init sheet
-	if (datasheet === 'init') {
+	if (datasheet === config.datasheet_init) {
 		await sheet.addRow(data);
 	};
 
-	// check if the data will be send to data1
-	if (datasheet === 'data1') {
+	// check if the data will be send to response sheet
+	if (datasheet === config.datasheet_response) {
 		await sheet.addRow(data);
 	}
 
-	// check if the data will be send to data2
-	if (datasheet === 'data2') {
+	// check if the data will be send to resolve sheet
+	if (datasheet === config.datasheet_resolve) {
 		await sheet.addRow(data);
 	};
 }

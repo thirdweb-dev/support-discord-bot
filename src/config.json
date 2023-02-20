@@ -3,5 +3,8 @@
     "emoji_close": "✅",
     "command_prefix": "!",
     "auto_archive_duration": 10080,
-    "timezone": "America/Los_Angeles"
+    "timezone": "America/Los_Angeles",
+    "datasheet_init": "init",
+    "datasheet_response": "response",
+    "datasheet_resolve": "resolve"
 }
