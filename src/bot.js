@@ -231,7 +231,8 @@ const sendData = async (data, datasheet) => {
  * @returns time and date format
  */
 const formatTime = (date) => {
-	return new Date(date).toLocaleString('en-US', { timeZone: config.timezone });
+	const data = new Date(date).toLocaleString('en-US', { timeZone: config.timezone, hour12: false });
+	return data.replace(/,/g, '');
 }
 
 // discord log event
