@@ -42,6 +42,7 @@ client.on('messageCreate', async (message) => {
 
 	// get the details from user who send command
 	const member = message.member;
+	const mention = message.mentions;
 	
 	// check if the command has the prefix and includes "close"
 	if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
@@ -62,12 +63,24 @@ client.on('messageCreate', async (message) => {
 			const resolutionTime = formatTime(message.createdTimestamp);
 			const resolvedBy = member.user.username;
 
-			// send the data
-			sendData({
-				thread_id: threadId,
-				resolution_time: resolutionTime,
-				resolved_by: resolvedBy
-			}, config.datasheet_resolve);
+			// check if there's a mentioned user
+			if (mention.users.first()) {
+				
+				// send the data, use the mentioned user as resolvedBy
+				sendData({
+					thread_id: threadId,
+					resolution_time: resolutionTime,
+					resolved_by: mention.users.first().username,
+				}, config.datasheet_resolve);
+			} else {
+
+				// send the data with the one who sends the command
+				sendData({
+					thread_id: threadId,
+					resolution_time: resolutionTime,
+					resolved_by: resolvedBy
+				}, config.datasheet_resolve);
+			}
 		}
 	}
 
