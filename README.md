@@ -32,6 +32,7 @@ To close the thread and resolved by the username mentioned
     "emoji_close": "✅",
     "command_prefix": "!",
     "auto_archive_duration": 10080,
+    "utc_offset": -8,
     "datasheet_init": "init",
     "datasheet_response": "response",
     "datasheet_resolve": "resolve"
@@ -44,6 +45,7 @@ To close the thread and resolved by the username mentioned
 | `emoji_close` | Emoji you want to use as a trigger to close and lock the thread support. |
 | `command_prefix` | A prefix you want to use with `close` command to be recognized by the bot. |
 | `auto_archive_duration` | Auto Archive Duration for your threads, `10080` for 1 week (in minutes). |
+| `utc_offset` | Time and date UTC offset for recording the data. |
 | `datasheet_init` | Refers to the sheet name in your google spreadsheet. This should be the first sheet in the order. |
 | `datasheet_response` | Refers to the sheet name in your google spreadsheet. This should be the second sheet in the order. |
 | `datasheet_resolve` | Refers to the sheet name in your google spreadsheet. This should be the third sheet in the order. |

@@ -240,7 +240,7 @@ const sendData = async (data, datasheet) => {
  * @returns time and date format
  */
 const formatTime = (date) => {
-	return moment.utc(date).format('M/DD/YYYY HH:mm:ss');
+	return moment.utc(date).utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
 }
 
 // discord log event
