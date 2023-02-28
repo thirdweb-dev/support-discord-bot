@@ -8,6 +8,20 @@ Dedicated thread-based support Discord bot for the thirdweb community.
 2. Only specified role can start a thread.
 3. React with emoji or prefix command to close a thread.
 
+### Commands
+
+To close thread using prefix command.
+
+```bash
+!close
+```
+
+To close the thread and resolved by the username mentioned
+
+```bash
+!close @username
+```
+
 ## Configurations
 
 ### Config File
@@ -18,7 +32,6 @@ Dedicated thread-based support Discord bot for the thirdweb community.
     "emoji_close": "✅",
     "command_prefix": "!",
     "auto_archive_duration": 10080,
-    "timezone": "America/Los_Angeles",
     "datasheet_init": "init",
     "datasheet_response": "response",
     "datasheet_resolve": "resolve"
@@ -31,7 +44,6 @@ Dedicated thread-based support Discord bot for the thirdweb community.
 | `emoji_close` | Emoji you want to use as a trigger to close and lock the thread support. |
 | `command_prefix` | A prefix you want to use with `close` command to be recognized by the bot. |
 | `auto_archive_duration` | Auto Archive Duration for your threads, `10080` for 1 week (in minutes). |
-| `timezone` | This is the timezone use for recording the date and time for the metrics. |
 | `datasheet_init` | Refers to the sheet name in your google spreadsheet. This should be the first sheet in the order. |
 | `datasheet_response` | Refers to the sheet name in your google spreadsheet. This should be the second sheet in the order. |
 | `datasheet_resolve` | Refers to the sheet name in your google spreadsheet. This should be the third sheet in the order. |
