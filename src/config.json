@@ -3,7 +3,7 @@
     "emoji_close": "✅",
     "command_prefix": "!",
     "auto_archive_duration": 10080,
-    "timezone": "America/Los_Angeles",
+    "utc_offset": -8,
     "datasheet_init": "init",
     "datasheet_response": "response",
     "datasheet_resolve": "resolve"
