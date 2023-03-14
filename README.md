@@ -1,5 +1,7 @@
 # Thread-based Support Bot (thirdweb support)
 
+> **Warning**: I'm currently working on a new version of support bot for the thirdweb community. This repo will be transformed to completely new bot to adapt the support for forums instead of threads. I'll create a separate repo to continue the project for support threads. Watch for any announcements here.
+
 Dedicated thread-based support Discord bot for the thirdweb community.
 
 ## How to Use
