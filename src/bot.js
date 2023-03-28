@@ -45,6 +45,11 @@ client.on('messageCreate', async (message) => {
 	// get the details from user who send command
 	const member = message.member;
 	const mention = message.mentions;
+
+	// get the forum details, from posts to tags
+	const forum = client.guilds.cache.get(message.guild.id);
+	const post = forum.channels.cache.get(message.channel.parent.id);
+	const tags = post.availableTags.filter((item) => { return item.name == 'Solved' })
 	
 	// check if the command has the prefix and includes "close"
 	if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
@@ -53,8 +58,8 @@ client.on('messageCreate', async (message) => {
 		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 			// then archive and lock it
 			message.channel.edit({
-				archived: true,
-				locked: true
+				appliedTags: [tags[0].id],
+				archived: true
 			});
 			// gather data
 			const threadId = message.channel.id;
@@ -83,41 +88,48 @@ client.on('messageCreate', async (message) => {
 	// check the the message if it is in the thread and from the support role
 	if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 		// get details about the thread and the message
-		const threadId = message.channel.id;
-		const fetchMessages = await message.channel.messages.fetch({ after: threadId });
+		const postId = message.channel.id;
+		const fetchMessages = await message.channel.messages.fetch({ after: postId });
 		const fetchMessagesArray = Array.from(fetchMessages); // convert the fetch data to array
+		// check if the fetch message array is empty
+		if (fetchMessagesArray.length) {
+			// check the messages for the first messages from the support role
+			for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
 
-		// check the messages for the first messages from the support role
-		for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
+				// get the member details from the author id in the data from the messages
+				const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
 
-			// get the member details from the author id in the data from the messages
-			const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
+				// check each messages for mod message, then break it if found the first message from support role
+				if (member.roles.cache.hasAny(...roleIDs)) {
+					
+					// check if the current message is first message inside the thread from support role
+					if (message.id === fetchMessagesArray[i][0]) {
 
-			// check each messages for mod message, then break it if found the first message from support role
-			if (member.roles.cache.hasAny(...roleIDs)) {
-				
-				// check if the current message is first message inside the thread from support role
-				if (message.id === fetchMessagesArray[i][0]) {
+						// capture the date and time
+						const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
 
-					// capture the date and time
-					const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
+						// and send it
+						sendData({
+							thread_id: postId,
+							first_response: firstResponse
+						}, config.datasheet_response);
+					}
 
-					// and send it
-					sendData({
-						thread_id: threadId,
-						first_response: firstResponse
-					}, config.datasheet_response);
+					// stop the loop
+					break;
 				}
-
-				// stop the loop
-				break;
 			}
 		}
 	}
 });
 
+// listen to new posts
+client.on('threadCreate', thread => {
+	console.log(thread.name);
+});
+
 // listens for any reactions to messages
-client.on('messageReactionAdd', async (reaction, user) => {
+/** client.on('messageReactionAdd', async (reaction, user) => {
 	// upon reaction check if it is in partial structure
 	if (reaction.partial) {
 		try {
@@ -136,7 +148,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 	/**
 	 * assign logic from emoji reaction
 	 * check if the user is part of the allowed role before creating a thread
-	 */
+	 *
 	if (reaction.emoji.name === emojiAssign && member.roles.cache.hasAny(...roleIDs)) {
 		const threadName = reaction.message.author.username;
 
@@ -175,33 +187,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 			}, config.datasheet_init);
 		}
 	}
-	/**
-	 * close logic from emoji reaction
-	 * check if the user is part of the allowed role before closing a thread
-	 */
-	if (reaction.emoji.name === emojiClose && member.roles.cache.hasAny(...roleIDs)) {
-		// check if the reaction is from a thread
-		if (reaction.message.channel.type === ChannelType.PublicThread) {
-
-			// then archive and lock it
-			reaction.message.channel.edit({
-				archived: true,
-				locked: true
-			});
-
-			// gather data
-			const threadId = reaction.message.channel.id;
-			const resolutionTime = formatTime(reaction.message.createdTimestamp);
-
-			// send the data
-			sendData({
-				thread_id: threadId,
-				resolution_time: resolutionTime,
-				resolved_by: user.username
-			}, config.datasheet_resolve);
-		}
-	}
-});
+}); **/
 
 /**
  * sends data to the spreadsheet
@@ -242,6 +228,10 @@ const sendData = async (data, datasheet) => {
 const formatTime = (date) => {
 	return moment.utc(date).utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
 }
+
+client.on('error', (err) => {
+	console.log(err.message)
+});
 
 // discord log event
 client.once('ready', bot => {
