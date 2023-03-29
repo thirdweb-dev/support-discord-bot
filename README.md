@@ -1,12 +1,12 @@
 # Forum-based Support Bot (thirdweb support)
 
-> **Note**: I moved the whole source code to the new repository focusing on the thread-based support bot. You can check it out here [thread-based-support-discord-bot](https://github.com/warengonzaga/thread-based-support-discord-bot). I'm going to transform this repository to focus on forum channels for Discord communities.
+> **Note**: This bot is based from [thread-based-support-discord-bot](https://github.com/warengonzaga/thread-based-support-discord-bot). Converted to fully support the forum posts.
 
 A dedicated forum-based support Discord bot for the thirdweb community.
 
 ## How to Use
 
-It has only command to close the forum post and track the data to database.
+This bot has only one command to use, for auto closing the posts from forum channels.
 
 ### Commands
 
