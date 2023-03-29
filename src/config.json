@@ -1,8 +1,5 @@
 {
-    "emoji_assign": "👀",
-    "emoji_close": "✅",
     "command_prefix": "!",
-    "auto_archive_duration": 10080,
     "utc_offset": -8,
     "datasheet_init": "init",
     "datasheet_response": "response",

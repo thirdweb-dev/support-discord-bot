@@ -1,8 +1,12 @@
-const { ActivityType, Client, ChannelType, GatewayIntentBits, Partials } = require('discord.js');
+const { 
+	ActivityType, 
+	Client, 
+	ChannelType, 
+	GatewayIntentBits, 
+	Partials } = require('discord.js');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const config = require(`${__dirname}/config.json`);
 const moment = require('moment');
-
 
 require('dotenv').config();
 
@@ -62,7 +66,7 @@ client.on('messageCreate', async (message) => {
 				archived: true
 			});
 			// gather data
-			const threadId = message.channel.id;
+			const postId = message.channel.id;
 			const resolutionTime = formatTime(message.createdTimestamp);
 			const resolvedBy = member.user.username;
 
@@ -70,14 +74,14 @@ client.on('messageCreate', async (message) => {
 			if (mention.users.first()) {
 				// send the data, use the mentioned user as resolvedBy
 				sendData({
-					thread_id: threadId,
+					post_id: postId,
 					resolution_time: resolutionTime,
 					resolved_by: mention.users.first().username,
 				}, config.datasheet_resolve);
 			} else {
 				// send the data with the one who sends the command
 				sendData({
-					thread_id: threadId,
+					post_id: postId,
 					resolution_time: resolutionTime,
 					resolved_by: resolvedBy
 				}, config.datasheet_resolve);
@@ -85,6 +89,9 @@ client.on('messageCreate', async (message) => {
 		}
 	}
 
+	/**
+	 * Logic to capture the first response from the forum post
+	 */
 	// check the the message if it is in the thread and from the support role
 	if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 		// get details about the thread and the message
@@ -107,11 +114,13 @@ client.on('messageCreate', async (message) => {
 
 						// capture the date and time
 						const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
+						const firstResponder = fetchMessagesArray[i][1].author.username;
 
 						// and send it
 						sendData({
-							thread_id: postId,
-							first_response: firstResponse
+							post_id: postId,
+							first_response: firstResponse,
+							responder: firstResponder
 						}, config.datasheet_response);
 					}
 
@@ -124,70 +133,38 @@ client.on('messageCreate', async (message) => {
 });
 
 // listen to new posts
-client.on('threadCreate', thread => {
-	console.log(thread.name);
-});
+client.on('threadCreate', async post => {
 
-// listens for any reactions to messages
-/** client.on('messageReactionAdd', async (reaction, user) => {
-	// upon reaction check if it is in partial structure
-	if (reaction.partial) {
-		try {
-			await reaction.fetch();
-		} catch (error) {
-			console.error(error);
-			return;
-		}
-	}
-	// get the details from the user who react
-	const guild = reaction.message.guild;
-	const member = await guild.members.fetch(user.id);
-	const emojiAssign = config.emoji_assign;
-	const emojiClose = config.emoji_close;
+	// fetch details of the post
+	const postDetails = await post.fetchStarterMessage({
+		cache: false
+	});
+
+	// gather data
+	const messageTimestamp = post.createdTimestamp;
+	const postId = post.id;
+	const postLink = `https://discord.com/channels/${post.guildId}/${postId}`;
+	const question = post.name;
+	const postedBy = postDetails?.author.username;
+	const posted = formatTime(messageTimestamp);
+	const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
+	const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
+	const responder = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_response}!A2:A,${config.datasheet_response}!C2:C},2,0))`;
+	const resolvedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_resolve}!A2:A,${config.datasheet_resolve}!C2:C},2,0))`;
 	
-	/**
-	 * assign logic from emoji reaction
-	 * check if the user is part of the allowed role before creating a thread
-	 *
-	if (reaction.emoji.name === emojiAssign && member.roles.cache.hasAny(...roleIDs)) {
-		const threadName = reaction.message.author.username;
-
-		// check if the reaction is not from the thread
-		if (reaction.message.channel.type !== ChannelType.PublicThread) {
-
-			// create thread and add who reacts
-			const thread = await reaction.message.startThread({
-				name: threadName,
-				autoArchiveDuration: config.auto_archive_duration
-			});
-
-			// then add that user to the thread
-			thread.members.add(user.id, 'Assigned user to provide support');
-
-			// gather data
-			const messageTimestamp = reaction.message.createdTimestamp;
-			const threadId = thread.id;
-			const question = reaction.message.content;
-			const posted = formatTime(messageTimestamp);
-			const responder = user.username;
-			const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
-			const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
-			const resolvedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_resolve}!A2:A,${config.datasheet_resolve}!C2:C},2,0))`;
-
-			// send the data
-			sendData({
-				thread_id: threadId,
-				thread_name: threadName,
-				question: question,
-				posted: posted,
-				responder: responder,
-				first_response: firstResponse,
-				resolution_time: resolutionTime,
-				resolved_by: resolvedBy
-			}, config.datasheet_init);
-		}
-	}
-}); **/
+	// send the data
+	sendData({
+		post_id: postId,
+		post_link: postLink,
+		question: question,
+		posted_by: postedBy,
+		posted: posted,
+		responder: responder,
+		first_response: firstResponse,
+		resolution_time: resolutionTime,
+		resolved_by: resolvedBy
+	}, config.datasheet_init);
+});
 
 /**
  * sends data to the spreadsheet
@@ -229,6 +206,7 @@ const formatTime = (date) => {
 	return moment.utc(date).utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
 }
 
+// discord error log event
 client.on('error', (err) => {
 	console.log(err.message)
 });
