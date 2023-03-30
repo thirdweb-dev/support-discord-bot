@@ -38,6 +38,7 @@ To close the thread and resolved by the username mentioned
 
 | Config Name | Description |
 | --- | --- |
+| `resolution_tag_name` | The name of the tag to mark the post resolved. |
 | `command_prefix` | A prefix you want to use with `close` command to be recognized by the bot. |
 | `utc_offset` | Time and date UTC offset for recording the data. |
 | `datasheet_init` | Refers to the sheet name in your google spreadsheet. This should be the first sheet in the order. |
