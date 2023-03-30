@@ -143,11 +143,6 @@ client.on('messageCreate', async (message) => {
 // listen to new forum posts
 client.on('threadCreate', async post => {
 
-	// fetch details of the post
-	const postDetails = await post.fetchStarterMessage({
-		cache: false
-	});
-
 	// get the forum details, from posts to tags
 	const forumChannel = client.guilds.cache.get(post.guildId);
 	const forumPost = forumChannel.channels.cache.get(post.parentId);
@@ -167,7 +162,7 @@ client.on('threadCreate', async post => {
 	const postId = post.id;
 	const postLink = `https://discord.com/channels/${post.guildId}/${postId}`;
 	const question = post.name;
-	const postedBy = postDetails?.author.username;
+	const postedBy = (await client.users.fetch(post.ownerId)).username;
 	const posted = formatTime(messageTimestamp);
 	const tags = forumTags.join(', ');
 	const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
