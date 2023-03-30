@@ -53,7 +53,7 @@ client.on('messageCreate', async (message) => {
 	// get the forum details, from posts to tags
 	const forum = client.guilds.cache.get(message.guild.id);
 	const post = forum.channels.cache.get(message.channel.parent.id);
-	const tags = post.availableTags.filter((item) => { return item.name == 'Solved' })
+	const tags = post.availableTags.filter((item) => { return item.name == 'Solved' });
 	
 	// check if the command has the prefix and includes "close"
 	if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
@@ -140,6 +140,20 @@ client.on('threadCreate', async post => {
 		cache: false
 	});
 
+	// get the forum details, from posts to tags
+	const forumChannel = client.guilds.cache.get(post.guildId);
+	const forumPost = forumChannel.channels.cache.get(post.parentId);
+	let forumTags = [];
+
+	// get the post tags
+	for (const availableTags of forumPost.availableTags) {
+		for (const appliedTags of post.appliedTags) {
+			if (availableTags.id === appliedTags) {
+				forumTags.push(availableTags.name);
+			}
+		}
+	}
+
 	// gather data
 	const messageTimestamp = post.createdTimestamp;
 	const postId = post.id;
@@ -147,11 +161,12 @@ client.on('threadCreate', async post => {
 	const question = post.name;
 	const postedBy = postDetails?.author.username;
 	const posted = formatTime(messageTimestamp);
+	const tags = forumTags.join(', ');
 	const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
 	const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
 	const responder = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_response}!A2:A,${config.datasheet_response}!C2:C},2,0))`;
 	const resolvedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_resolve}!A2:A,${config.datasheet_resolve}!C2:C},2,0))`;
-	
+
 	// send the data
 	sendData({
 		post_id: postId,
@@ -159,6 +174,7 @@ client.on('threadCreate', async post => {
 		question: question,
 		posted_by: postedBy,
 		posted: posted,
+		tags: tags,
 		responder: responder,
 		first_response: firstResponse,
 		resolution_time: resolutionTime,
