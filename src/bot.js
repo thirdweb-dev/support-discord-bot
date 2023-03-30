@@ -35,13 +35,18 @@ const client = new Client({
 // load spreadsheet
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID);
 
-// listen to messages
+// listen to post messages
 client.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	
 	// check ping
 	if (message.content === 'ping') {
 		message.reply(`Pong: ${client.ws.ping}ms`);
+	}
+
+	// respond to user if the bot mentioned
+	if (message.mentions.has(client.user)) {
+		message.reply(config.mention_message);
 	}
 
 	// get the details from user who send command
@@ -135,7 +140,7 @@ client.on('messageCreate', async (message) => {
 	}
 });
 
-// listen to new posts
+// listen to new forum posts
 client.on('threadCreate', async post => {
 
 	// fetch details of the post
@@ -226,9 +231,9 @@ const formatTime = (date) => {
 }
 
 // discord error log event
-// client.on('error', (err) => {
-// 	console.log(err.message)
-// });
+client.on('error', (err) => {
+	console.log(err.message)
+});
 
 // discord log event
 client.once('ready', bot => {

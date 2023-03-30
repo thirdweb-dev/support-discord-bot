@@ -8,6 +8,9 @@ A dedicated forum-based support Discord bot for the thirdweb community.
 
 This bot has only one command to use, for auto closing the posts from forum channels.
 
+- Make sure the forum post has tags that is required before posting.
+- Add proper permission to the bot to avoid unexpected issues.
+
 ### Commands
 
 To close thread using prefix command.
@@ -32,7 +35,8 @@ To close the thread and resolved by the username mentioned
     "utc_offset": -8,
     "datasheet_init": "init",
     "datasheet_response": "response",
-    "datasheet_resolve": "resolve"
+    "datasheet_resolve": "resolve",
+    "mention_message": "Hello there! If you need help, please read the information in <#1074862134284005396> and post your questions or issues in the <#1029543258822553680> channel. Our team and community members are always ready to help you out. Thank you for building with us!"
 }
 ```
 
@@ -44,6 +48,7 @@ To close the thread and resolved by the username mentioned
 | `datasheet_init` | Refers to the sheet name in your google spreadsheet. This should be the first sheet in the order. |
 | `datasheet_response` | Refers to the sheet name in your google spreadsheet. This should be the second sheet in the order. |
 | `datasheet_resolve` | Refers to the sheet name in your google spreadsheet. This should be the third sheet in the order. |
+| `mention_message` | The message bot will send if the bot mentioned by the user, you can use use the channel ids to mention it within the bot message. |
 
 ## Environment Variables
 
