@@ -24,13 +24,11 @@ const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds, 
 		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.GuildMessageReactions
+		GatewayIntentBits.GuildMessages
 	],
 	partials: [
 		Partials.Channel,
-		Partials.Message,
-		Partials.Reaction
+		Partials.Message
 	]
 });
 
@@ -53,79 +51,84 @@ client.on('messageCreate', async (message) => {
 	// get the forum details, from posts to tags
 	const forum = client.guilds.cache.get(message.guild.id);
 	const post = forum.channels.cache.get(message.channel.parent.id);
-	const tags = post.availableTags.filter((item) => { return item.name == 'Solved' });
-	
-	// check if the command has the prefix and includes "close"
-	if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
-		await message.delete(); // delete the commmand message
-		// check if the channel is a thread and has support role
-		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
-			// then archive and lock it
-			message.channel.edit({
-				appliedTags: [tags[0].id],
-				archived: true
-			});
-			// gather data
-			const postId = message.channel.id;
-			const resolutionTime = formatTime(message.createdTimestamp);
-			const resolvedBy = member.user.username;
 
-			// check if there's a mentioned user
-			if (mention.users.first()) {
-				// send the data, use the mentioned user as resolvedBy
-				sendData({
-					post_id: postId,
-					resolution_time: resolutionTime,
-					resolved_by: mention.users.first().username,
-				}, config.datasheet_resolve);
-			} else {
-				// send the data with the one who sends the command
-				sendData({
-					post_id: postId,
-					resolution_time: resolutionTime,
-					resolved_by: resolvedBy
-				}, config.datasheet_resolve);
+	// check if the message is from the forum post
+	if (typeof post.availableTags !== 'undefined') {
+		// filter the tags to get the resolution tag name ID
+		const tags = post.availableTags.filter((item) => { return item.name == config.resolution_tag_name });
+	
+		// check if the command has the prefix and includes "close"
+		if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
+			await message.delete(); // delete the commmand message
+			// check if the channel is a thread and has support role
+			if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
+				// then archive and lock it
+				message.channel.edit({
+					appliedTags: [tags[0].id],
+					archived: true
+				});
+				// gather data
+				const postId = message.channel.id;
+				const resolutionTime = formatTime(message.createdTimestamp);
+				const resolvedBy = member.user.username;
+
+				// check if there's a mentioned user
+				if (mention.users.first()) {
+					// send the data, use the mentioned user as resolvedBy
+					sendData({
+						post_id: postId,
+						resolution_time: resolutionTime,
+						resolved_by: mention.users.first().username,
+					}, config.datasheet_resolve);
+				} else {
+					// send the data with the one who sends the command
+					sendData({
+						post_id: postId,
+						resolution_time: resolutionTime,
+						resolved_by: resolvedBy
+					}, config.datasheet_resolve);
+				}
 			}
 		}
-	}
 
-	/**
-	 * Logic to capture the first response from the forum post
-	 */
-	// check the the message if it is in the thread and from the support role
-	if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
-		// get details about the thread and the message
-		const postId = message.channel.id;
-		const fetchMessages = await message.channel.messages.fetch({ after: postId });
-		const fetchMessagesArray = Array.from(fetchMessages); // convert the fetch data to array
-		// check if the fetch message array is empty
-		if (fetchMessagesArray.length) {
-			// check the messages for the first messages from the support role
-			for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
+		/**
+		 * Logic to capture the first response from the forum post
+		 */
+		// check the the message if it is in the thread and from the support role
+		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
+			// get details about the thread and the message
+			const postId = message.channel.id;
+			const fetchMessages = await message.channel.messages.fetch({ after: postId });
+			const fetchMessagesArray = Array.from(fetchMessages); // convert the fetch data to array
+			// check if the fetch message array is empty
+			if (fetchMessagesArray.length) {
+				// check the messages for the first messages from the support role
+				for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
 
-				// get the member details from the author id in the data from the messages
-				const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
+					// get the member details from the author id in the data from the messages
+					const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
 
-				// check each messages for mod message, then break it if found the first message from support role
-				if (member.roles.cache.hasAny(...roleIDs)) {
-					
-					// check if the current message is first message inside the thread from support role
-					if (message.id === fetchMessagesArray[i][0]) {
+					// check each messages for mod message, then break it if found the first message from support role
+					if (member.roles.cache.hasAny(...roleIDs)) {
+						
+						// check if the current message is first message inside the thread from support role
+						if (message.id === fetchMessagesArray[i][0]) {
 
-						// capture the date and time
-						const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
-						const firstResponder = fetchMessagesArray[i][1].author.username;
+							// capture the date and time
+							const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
+							const firstResponder = fetchMessagesArray[i][1].author.username;
 
-						// and send it
-						sendData({
-							post_id: postId,
-							first_response: firstResponse,
-							responder: firstResponder
-						}, config.datasheet_response);
+							// and send it
+							sendData({
+								post_id: postId,
+								first_response: firstResponse,
+								responder: firstResponder
+							}, config.datasheet_response);
+						}
+
+						// stop the loop
+						break;
 					}
-
-					// stop the loop
-					break;
 				}
 			}
 		}
@@ -223,9 +226,9 @@ const formatTime = (date) => {
 }
 
 // discord error log event
-client.on('error', (err) => {
-	console.log(err.message)
-});
+// client.on('error', (err) => {
+// 	console.log(err.message)
+// });
 
 // discord log event
 client.once('ready', bot => {
