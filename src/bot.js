@@ -231,9 +231,9 @@ const formatTime = (date) => {
 }
 
 // discord error log event
-client.on('error', (err) => {
-	console.log(err.message)
-});
+// client.on('error', (err) => {
+// 	console.log(err.message)
+// });
 
 // discord log event
 client.once('ready', bot => {
