@@ -44,8 +44,8 @@ client.on('messageCreate', async (message) => {
 		message.reply(`Pong: ${client.ws.ping}ms`);
 	}
 
-	// respond to user if the bot mentioned
-	if (message.mentions.has(client.user)) {
+	// respond to user if the bot mentioned specifically not with everyone
+	if (message.mentions.has(client.user) && !message.mentions.everyone) {
 		message.reply(config.mention_message);
 	}
 

@@ -31,6 +31,7 @@ To close the thread and resolved by the username mentioned
 
 ```json
 {
+    "resolution_tag_name": "Solved",
     "command_prefix": "!",
     "utc_offset": -8,
     "datasheet_init": "init",
