@@ -65,7 +65,8 @@ client.on('messageCreate', async (message) => {
 		const postTags = message.channel.appliedTags;
 		
 		// collect tags
-		let tags = [resolutionTag[0].id,...postTags];
+		let initialTags = [resolutionTag[0].id,...postTags];
+		let tags = [...new Set(initialTags)];
 
 		// check if the command has the prefix and includes "close"
 		if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
