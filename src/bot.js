@@ -73,9 +73,6 @@ client.on('messageCreate', async (message) => {
 			// check if the channel is a thread and the user has support role
 			if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 
-				// remove existing appliedTags
-				await message.channel.setAppliedTags([]);
-
 				// then archive and lock it
 				message.channel.edit({
 					appliedTags: tags,
