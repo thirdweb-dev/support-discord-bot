@@ -73,33 +73,36 @@ client.on('messageCreate', async (message) => {
 			// check if the channel is a thread and the user has support role
 			if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 
+				// remove existing appliedTags
+				await message.channel.setAppliedTags([]);
+
 				// then archive and lock it
 				message.channel.edit({
 					appliedTags: tags,
 					archived: true
 				});
-				// gather data
 
+				// gather data
 				const postId = message.channel.id;
 				const resolutionTime = formatTime(message.createdTimestamp);
 				const resolvedBy = member.user.username;
 
 				// check if there's a mentioned user
-				if (mention.users.first()) {
-					// send the data, use the mentioned user as resolvedBy
-					sendData({
-						post_id: postId,
-						resolution_time: resolutionTime,
-						resolved_by: mention.users.first().username,
-					}, config.datasheet_resolve);
-				} else {
-					// send the data with the one who sends the command
-					sendData({
-						post_id: postId,
-						resolution_time: resolutionTime,
-						resolved_by: resolvedBy
-					}, config.datasheet_resolve);
-				}
+				// if (mention.users.first()) {
+				// 	// send the data, use the mentioned user as resolvedBy
+				// 	sendData({
+				// 		post_id: postId,
+				// 		resolution_time: resolutionTime,
+				// 		resolved_by: mention.users.first().username,
+				// 	}, config.datasheet_resolve);
+				// } else {
+				// 	// send the data with the one who sends the command
+				// 	sendData({
+				// 		post_id: postId,
+				// 		resolution_time: resolutionTime,
+				// 		resolved_by: resolvedBy
+				// 	}, config.datasheet_resolve);
+				// }
 			}
 		}
 
