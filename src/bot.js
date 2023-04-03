@@ -60,19 +60,26 @@ client.on('messageCreate', async (message) => {
 	// check if the message is from the forum post
 	if (typeof post.availableTags !== 'undefined') {
 		// filter the tags to get the resolution tag name ID
-		const tags = post.availableTags.filter((item) => { return item.name == config.resolution_tag_name });
-	
+		const resolutionTag = post.availableTags.filter((item) => { return item.name == config.resolution_tag_name });
+		// get the existing tags of the post
+		const postTags = message.channel.appliedTags;
+		
+		// collect tags
+		let tags = [resolutionTag[0].id,...postTags];
+
 		// check if the command has the prefix and includes "close"
 		if (message.content.startsWith(config.command_prefix) && message.content.includes('close')) {
 			await message.delete(); // delete the commmand message
-			// check if the channel is a thread and has support role
+			// check if the channel is a thread and the user has support role
 			if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
+
 				// then archive and lock it
 				message.channel.edit({
-					appliedTags: [tags[0].id],
+					appliedTags: tags,
 					archived: true
 				});
 				// gather data
+
 				const postId = message.channel.id;
 				const resolutionTime = formatTime(message.createdTimestamp);
 				const resolvedBy = member.user.username;
