@@ -1,10 +1,10 @@
-# Forum-based Support Bot (thirdweb support)
+# thirdweb Support (Forum-based Support Discord Bot)
 
 > **Note**: This bot is based from [thread-based-support-discord-bot](https://github.com/warengonzaga/thread-based-support-discord-bot). Converted to fully support the forum posts.
 
 A dedicated forum-based support Discord bot for the thirdweb community.
 
-## How to Use
+## 🤔 How to Use
 
 This bot has only one command to use, for auto closing the posts from forum channels.
 
@@ -25,7 +25,7 @@ To close the thread and resolved by the username mentioned
 !close @username
 ```
 
-## Configurations
+## 🎛️ Configurations
 
 ### Config File
 
@@ -51,7 +51,7 @@ To close the thread and resolved by the username mentioned
 | `datasheet_resolve` | Refers to the sheet name in your google spreadsheet. This should be the third sheet in the order. |
 | `mention_message` | The message bot will send if the bot mentioned by the user, you can use use the channel ids to mention it within the bot message. |
 
-## Environment Variables
+## 👁️ Environment Variables
 
 ```env
 DISCORD_BOT_TOKEN=<discord_bot_token>
@@ -61,7 +61,7 @@ GOOGLE_SERVICE_ACCOUNT_EMAIL=<service_email_account>
 GOOGLE_SPREADSHEET_ID=<google_spreadsheet_id>
 ```
 
-## Development
+## 💻 Development
 
 ### Install the packages
 
@@ -78,14 +78,6 @@ yarn dev
 ## 📃 License
 
 The Forum-based Support Bot (thirdweb support) is licensed under [GNU General Public License v3](https://opensource.org/licenses/GPL-3.0).
-
-## 🍀 Sponsor
-
-Love what I do? Send me some [love](https://github.com/sponsors/warengonzaga) or [coffee](https://buymeacoff.ee/warengonzaga)!? 💖☕
-
-Can't send love or coffees? 😥 Nominate me for a **[GitHub Star](https://stars.github.com/nominate)** instead!
-
-> **Note**: Your support means a lot to me as it allows me to dedicate my time and energy to create and maintain open-source projects that benefits the community. Thank you for supporting my mission to make technology better, accessible and inclusive for everyone.🙏😇
 
 ## 📝 Author
 
