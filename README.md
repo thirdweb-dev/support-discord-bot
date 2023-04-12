@@ -1,8 +1,8 @@
-# thirdweb Support (Forum-based Support Discord Bot)
+# thirdweb Support Bot
 
 > **Note**: This bot is based from [thread-based-support-discord-bot](https://github.com/warengonzaga/thread-based-support-discord-bot). Converted to fully support the forum posts.
 
-A dedicated forum-based support Discord bot for the thirdweb community.
+A dedicated forum-based support Discord bot for the thirdweb community. This bot is created specifically for the community setup of thirdweb community. If you want to use the bot would recommend to use the public version of it.
 
 ## 🤔 How to Use
 
