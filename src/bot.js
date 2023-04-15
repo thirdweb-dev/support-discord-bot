@@ -42,6 +42,7 @@ client.on('messageCreate', async (message) => {
 	// check ping
 	if (message.content === 'ping') {
 		message.reply(`Pong: ${client.ws.ping}ms`);
+		console.log(`[log]: responded to ping command in ${client.ws.ping}ms`);
 	}
 
 	// respond to user if the bot mentioned specifically not with everyone
