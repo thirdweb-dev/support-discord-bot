@@ -137,6 +137,9 @@ client.on('messageCreate', async (message) => {
 								first_response: firstResponse,
 								responder: firstResponder
 							}, config.datasheet_response);
+
+							// log if the first response has been sent
+							console.log(`[log]: first response sent to database with post id of ${postId}`);
 						}
 
 						// stop the loop
