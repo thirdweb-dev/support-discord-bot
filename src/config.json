@@ -11,7 +11,9 @@
     "datasheet_resolve": "resolve",
     "utc_offset": -8,
     "reminder_mention": "Hey! If you need help, please read the information in <#1074862134284005396> and post your questions or issues in the <#1029543258822553680> channel. Our team and community members are always ready to help you out. Thank you for building with us!",
-    "reminder_max_tags": "Hey! I can't close/resolve this post it reached max tags. Kindly update this post with approriate and relevant tags and try again.",
-    "reminder_close": "Hey, this post has been closed due to inactivity, you can still continue if you wish as long as it is relevant to the post. If not, please create a new post for any other questions or concerns.",
-    "reminder_resolve": "Hey, this post has been marked as resolved, check the pinned message here to see the solution. If you have some other questions kindly create a new post. Happy building!"
+    "reminder_max_tags": "Max tags (5) exceeded. Please update the original post with fewer tags and try again.",
+    "reminder_close": "Hello! This post was closed due to inactivity, missing information, or otherwise. If you believe this was a mistake or you wish to re-open, please let us know here and we're happy to do so! For new questions, please create a new post in <#1029543258822553680>. Thank you!",
+    "reminder_resolve": "This post has been marked as resolved, check the pinned message here to see the solution. If you have another question, kindly create a new post in <#1029543258822553680>. Happy building!",
+    "reminder_reopen": "",
+    "reminder_escalate": ""
 }
