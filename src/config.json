@@ -14,6 +14,6 @@
     "reminder_max_tags": "Max tags (5) exceeded. Please update the original post with fewer tags and try again.",
     "reminder_close": "Hello! This post was closed due to inactivity, missing information, or otherwise. If you believe this was a mistake or you wish to re-open, please let us know here and we're happy to do so! For new questions, please create a new post in <#1029543258822553680>. Thank you!",
     "reminder_resolve": "This post has been marked as resolved, check the pinned message here to see the solution. If you have another question, kindly create a new post in <#1029543258822553680>. Happy building!",
-    "reminder_reopen": "",
-    "reminder_escalate": ""
+    "reminder_reopen": "This post has been re-opened. We'll be right with you!",
+    "reminder_escalate": "We have escalated this to our engineering team to investigate. We'll get back to you here as soon as possible."
 }
