@@ -1,6 +1,6 @@
 {
   "name": "thirdweb-support-discord-bot",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Discord threads-based support for the thirdweb community.",
   "main": "src/bot.ts",
   "author": "Waren Gonzaga",
