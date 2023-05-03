@@ -1,9 +1,17 @@
 {
-    "resolution_tag_name": "Solved",
     "command_prefix": "!",
-    "utc_offset": -8,
+    "command_resolve": "resolve",
+    "command_close": "close",
+    "command_escalate": "escalate",
+    "tag_name_resolve": "Solved",
+    "tag_name_close": "Closed",
+    "tag_name_escalate": "Escalated",
     "datasheet_init": "init",
     "datasheet_response": "response",
     "datasheet_resolve": "resolve",
-    "mention_message": "Hello there! If you need help, please read the information in <#1074862134284005396> and post your questions or issues in the <#1029543258822553680> channel. Our team and community members are always ready to help you out. Thank you for building with us!"
+    "utc_offset": -8,
+    "reminder_mention": "Hey! If you need help, please read the information in <#1074862134284005396> and post your questions or issues in the <#1029543258822553680> channel. Our team and community members are always ready to help you out. Thank you for building with us!",
+    "reminder_max_tags": "Hey! I can't close/resolve this post it reached max tags. Kindly update this post with approriate and relevant tags and try again.",
+    "reminder_close": "Hey, this post has been closed due to inactivity, you can still continue if you wish as long as it is relevant to the post. If not, please create a new post for any other questions or concerns.",
+    "reminder_resolve": "Hey, this post has been marked as resolved, check the pinned message here to see the solution. If you have some other questions kindly create a new post. Happy building!"
 }
