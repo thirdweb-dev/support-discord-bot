@@ -1,5 +1,6 @@
-const { 
-	ActivityType, 
+const fs = require('node:fs');
+const path = require('node:path');
+const {
 	Client, 
 	ChannelType, 
 	GatewayIntentBits, 
@@ -292,22 +293,19 @@ const formatTime = (date) => {
 	return moment.utc(date).utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
 }
 
-// discord error log event
-client.on('error', (err) => {
-	console.log(err);
-});
+// reading events file in discord.js
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
-// discord log event
-client.once('ready', bot => {
-	client.user?.setPresence({
-		activities: [{
-			name: 'for support.',
-			type: ActivityType.Watching
-		}]
-	});
-
-	console.log(`Ready! Logged in as ${bot.user.tag}`);
-});
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+}
 
 // log in to Discord with your client's token
 client.login(token);
