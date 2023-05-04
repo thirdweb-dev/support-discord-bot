@@ -149,6 +149,7 @@ client.on('messageCreate', async (message) => {
 					})
 					.then(message => {
 						setTimeout(() => message.delete(), 10000) // delete message after 15s
+						console.log(`[log]: ${config.reminder_max_tags}`);
 					})
 					.catch(
 						console.log(`[log]: failed to send embed message to ${message.author.username}`)
