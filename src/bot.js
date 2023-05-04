@@ -293,7 +293,7 @@ const formatTime = (date) => {
 	return moment.utc(date).utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
 }
 
-// reading events file in discord.js
+// reading events file
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
