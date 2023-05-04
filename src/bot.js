@@ -101,6 +101,7 @@ client.on('messageCreate', async (message) => {
 		if (message.content.startsWith(config.command_prefix) && message.content.includes(config.command_resolve)) {
 			await message.delete(); // delete the commmand message
 			// check if the channel is a thread and the user has support role
+			console.log(`[log]: ${message.channel.type} (${ChannelType.PublicThread})`);
 			if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 				console.log(`[log]: command sender has proper roles`);
 				console.log(`[log]: post tags: ${postTags.length}`);
