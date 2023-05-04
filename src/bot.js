@@ -4,8 +4,7 @@ const {
 	ChannelType, 
 	GatewayIntentBits, 
 	Partials,
-	EmbedBuilder, 
-	Embed } = require('discord.js');
+	EmbedBuilder } = require('discord.js');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const config = require(`${__dirname}/config.json`);
 const moment = require('moment');
@@ -100,12 +99,11 @@ client.on('messageCreate', async (message) => {
 		// check if the command has the prefix and includes "close"
 		if (message.content.startsWith(config.command_prefix) && message.content.includes(config.command_resolve)) {
 			await message.delete(); // delete the commmand message
-			// check if the channel is a thread and the user has support role
-			console.log(`[log]: ${message.channel.type} (${ChannelType.PublicThread})`);
+			
+			// check if the message is in the forum post and from the support role
 			if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
-				console.log(`[log]: command sender has proper roles`);
-				console.log(`[log]: post tags: ${postTags.length}`);
 
+				// check if the post has fewer tags
 				if (postTags.length < 5) {
 
 					// send embed message before closing the post
@@ -152,11 +150,7 @@ client.on('messageCreate', async (message) => {
 					})
 					.then(message => {
 						setTimeout(() => message.delete(), 10000) // delete message after 15s
-						console.log(`[log]: ${config.reminder_max_tags}`);
-					})
-					.catch(
-						console.log(`[log]: failed to send embed message to ${message.author.username}`)
-					);
+					});
 				}
 			}
 		}
