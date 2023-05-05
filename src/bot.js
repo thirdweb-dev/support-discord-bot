@@ -96,7 +96,7 @@ client.on('messageCreate', async (message) => {
 		let initialTags = [resolutionTag[0].id,...postTags];
 		let tags = [...new Set(initialTags)];
 
-		// check if the command has the prefix and includes "close"
+		// check if the command has the prefix and includes "resolve"
 		if (message.content.startsWith(config.command_prefix) && message.content.includes(config.command_resolve)) {
 			await message.delete(); // delete the commmand message
 			
@@ -106,8 +106,8 @@ client.on('messageCreate', async (message) => {
 				// check if the post has fewer tags
 				if (postTags.length < 5) {
 
-					// send embed message before closing the post
-					message.channel.send({ embeds: [
+					// send embed message before resolving the post
+					await message.channel.send({ embeds: [
 							sendEmbedMessage(`${config.reminder_resolve}`)
 						],
 						content: `🔔 <@${message.channel.ownerId}>`
