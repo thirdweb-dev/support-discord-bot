@@ -4,11 +4,10 @@ const {
 	Client, 
 	ChannelType, 
 	GatewayIntentBits, 
-	Partials,
-	EmbedBuilder } = require('discord.js');
-const { GoogleSpreadsheet } = require('google-spreadsheet');
-const config = require(`${__dirname}/config.json`);
-const moment = require('moment');
+	Partials } = require('discord.js');
+const config = require('./config.json');
+const { sendEmbedMessage, formatTime } = require('./utils/core');
+const { sendData } = require('./utils/database');
 
 require('dotenv').config();
 
@@ -33,29 +32,6 @@ const client = new Client({
 		Partials.Message
 	]
 });
-
-// load spreadsheet
-const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID);
-
-/**
- * send embed message
- * @param {string} message 
- * @returns pre-defined embed style
- */
-const sendEmbedMessage = (message) => {
-	return new EmbedBuilder()
-	.setDescription(message)
-	.setColor(`#f213a4`);
-}
-
-/**
- * get username from ownerid
- * @param {number} id 
- * @returns 
- */
-const getUsernameFromId = async (id) => {
-	return (await client.users.fetch(id)).username;
-}
 
 // listen to post messages
 client.on('messageCreate', async (message) => {
@@ -252,46 +228,6 @@ client.on('threadCreate', async post => {
 		resolved_by: resolvedBy
 	}, config.datasheet_init);
 });
-
-/**
- * sends data to the spreadsheet
- * @param {object} data - data being added as row in the spreadsheet
- * @param {string} datasheet - name of sheet where data being sent e.g. init, response, resolve
- */
-const sendData = async (data, datasheet) => {
-	// authenticate
-	await doc.useServiceAccountAuth({
-		client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-		private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-	});
-	// load the "initial" sheet
-	await doc.loadInfo();
-	const sheet = doc.sheetsByTitle[datasheet];
-
-	// check if the data will be send to init sheet
-	if (datasheet === config.datasheet_init) {
-		await sheet.addRow(data);
-	};
-
-	// check if the data will be send to response sheet
-	if (datasheet === config.datasheet_response) {
-		await sheet.addRow(data);
-	}
-
-	// check if the data will be send to resolve sheet
-	if (datasheet === config.datasheet_resolve) {
-		await sheet.addRow(data);
-	};
-}
-
-/**
- * format time according to UTC
- * @param {number} date - epoch timestamp
- * @returns time and date format
- */
-const formatTime = (date) => {
-	return moment.utc(date).utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
-}
 
 // reading events file
 const eventsPath = path.join(__dirname, 'events');
