@@ -159,7 +159,7 @@ client.on('messageCreate', async (message) => {
 		 * Logic to capture the first response from the forum post
 		 */
 		// check the the message if it is in the thread and from the support role
-		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
+		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs) && !message.content.startsWith(config.command_prefix)) {
 			// get details about the thread and the message
 			const postId = message.channel.id;
 			const fetchMessages = await message.channel.messages.fetch({ after: postId });
