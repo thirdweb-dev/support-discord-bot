@@ -66,15 +66,12 @@ client.on('messageCreate', async (message) => {
 	if (typeof post.availableTags !== 'undefined') {
 		// filter the tags to get the resolution tag name ID
 		const resolutionTag = post.availableTags.filter((item) => { return item.name == config.tag_name_resolve });
+		const closeTag = post.availableTags.filter((item) => { return item.name == config.tag_name_close });
 		// get the existing tags of the post
 		const postTags = message.channel.appliedTags;
-		
-		// collect tags
-		let initialTags = [resolutionTag[0].id,...postTags];
-		let tags = [...new Set(initialTags)];
 
 		// check if the command has the prefix and includes "resolve"
-		if (message.content.startsWith(config.command_prefix) && message.content.includes(config.command_resolve)) {
+		if (message.content.startsWith(config.command_prefix)) {
 			await message.delete(); // delete the commmand message
 			
 			// check if the message is in the forum post and from the support role
@@ -83,39 +80,91 @@ client.on('messageCreate', async (message) => {
 				// check if the post has fewer tags
 				if (postTags.length < 5) {
 
-					// send embed message before resolving the post
-					await message.channel.send({ embeds: [
-							sendEmbedMessage(`${config.reminder_resolve}`)
-						],
-						content: `🔔 <@${message.channel.ownerId}>`
-					})
-
-					// then archive and lock it
-					message.channel.edit({
-						appliedTags: tags,
-						archived: true
-					});
-
 					// gather data
 					const postId = message.channel.id;
 					const resolutionTime = formatTime(message.createdTimestamp);
 					const resolvedBy = member.user.username;
 
-					// check if there's a mentioned user
-					if (mention.users.first()) {
-						// send the data, use the mentioned user as resolvedBy
-						sendData({
-							post_id: postId,
-							resolution_time: resolutionTime,
-							resolved_by: mention.users.first().username,
-						}, config.datasheet_resolve);
-					} else {
-						// send the data with the one who sends the command
-						sendData({
-							post_id: postId,
-							resolution_time: resolutionTime,
-							resolved_by: resolvedBy
-						}, config.datasheet_resolve);
+					// functions for resolve command
+					if (message.content.includes(config.command_resolve)) {
+
+						// data for resolve command
+						// collect tags
+						let initialTags = [resolutionTag[0].id,...postTags];
+						let tags = [...new Set(initialTags)];
+
+						// send embed message upon executing the resolve command
+						await message.channel.send({ 
+							embeds: [
+								sendEmbedMessage(`${config.reminder_resolve}`)
+							],
+							content: `🔔 <@${message.channel.ownerId}>`
+						});
+
+						// then archive and lock it
+						message.channel.edit({
+							appliedTags: tags,
+							archived: true
+						});
+
+						// check if there's a mentioned user
+						if (mention.users.first()) {
+							// send the data, use the mentioned user as resolvedBy
+							sendData({
+								post_id: postId,
+								resolution_time: resolutionTime,
+								resolved_by: mention.users.first().username,
+							}, config.datasheet_resolve);
+						} else {
+							// send the data with the one who sends the command
+							sendData({
+								post_id: postId,
+								resolution_time: resolutionTime,
+								resolved_by: resolvedBy
+							}, config.datasheet_resolve);
+						}
+
+					}
+
+					// functions for close command
+					if (message.content.includes(config.command_close)) {
+
+						// data for resolve command
+						// collect tags
+						let initialTags = [closeTag[0].id,...postTags];
+						let tags = [...new Set(initialTags)];
+
+						// send embed message upon executing the close command
+						await message.channel.send({ 
+							embeds: [
+								sendEmbedMessage(`${config.reminder_close}`)
+							],
+							content: `🔔 <@${message.channel.ownerId}>`
+						});
+
+						// then archive and lock it
+						message.channel.edit({
+							appliedTags: tags,
+							archived: true
+						});
+
+						// check if there's a mentioned user
+						if (mention.users.first()) {
+							// send the data, use the mentioned user as resolvedBy
+							sendData({
+								post_id: postId,
+								close_time: resolutionTime,
+								closed_by: mention.users.first().username,
+							}, config.datasheet_close);
+						} else {
+							// send the data with the one who sends the command
+							sendData({
+								post_id: postId,
+								close_time: resolutionTime,
+								closed_by: resolvedBy
+							}, config.datasheet_close);
+						}
+
 					}
 
 				} else {
@@ -211,8 +260,10 @@ client.on('threadCreate', async post => {
 	const tags = forumTags.join(', ');
 	const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
 	const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
+	const closeTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_close}!A2:B,2,0))`;
 	const responder = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_response}!A2:A,${config.datasheet_response}!C2:C},2,0))`;
 	const resolvedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_resolve}!A2:A,${config.datasheet_resolve}!C2:C},2,0))`;
+	const closedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_close}!A2:A,${config.datasheet_close}!C2:C},2,0))`;
 
 	// send the data
 	sendData({
@@ -225,7 +276,9 @@ client.on('threadCreate', async post => {
 		responder: responder,
 		first_response: firstResponse,
 		resolution_time: resolutionTime,
-		resolved_by: resolvedBy
+		resolved_by: resolvedBy,
+		close_time: closeTime,
+		closed_by: closedBy
 	}, config.datasheet_init);
 });
 

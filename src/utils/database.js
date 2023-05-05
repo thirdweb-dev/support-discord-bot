@@ -34,6 +34,11 @@ const sendData = async (data, datasheet) => {
 	if (datasheet === config.datasheet_resolve) {
 		await sheet.addRow(data);
 	};
+
+	// check if the data will be send to close sheet
+	if (datasheet === config.datasheet_close) {
+		await sheet.addRow(data);
+	};
 }
 
 module.exports = {
