@@ -1,15 +1,15 @@
-const fs = require('node:fs');
-const path = require('node:path');
+const fs = require("fs");
+const path = require("node:path");
 const {
 	Client, 
 	ChannelType, 
 	GatewayIntentBits, 
-	Partials } = require('discord.js');
-const config = require('./config.json');
-const { sendEmbedMessage, formatTime } = require('./utils/core');
-const { sendData } = require('./utils/database');
+	Partials } = require("discord.js");
+const config = require("./config.json");
+const { sendEmbedMessage, formatTime, getURLFromMessage } = require("./utils/core");
+const { sendData } = require("./utils/database");
 
-require('dotenv').config();
+require("dotenv").config();
 
 // discord bot tokens
 const { 
@@ -39,7 +39,7 @@ client.on('messageCreate', async (message) => {
 	
 	// check ping
 	if (message.content === 'ping') {
-		// message.reply(`Pong: ${client.ws.ping}ms`);
+
 		message.reply({ embeds: [
 			sendEmbedMessage(`Pong: ${client.ws.ping}ms`)
 		] });
@@ -67,6 +67,7 @@ client.on('messageCreate', async (message) => {
 		// filter the tags to get the resolution tag name ID
 		const resolutionTag = post.availableTags.filter((item) => { return item.name == config.tag_name_resolve });
 		const closeTag = post.availableTags.filter((item) => { return item.name == config.tag_name_close });
+		const escalateTag = post.availableTags.filter((item) => { return item.name == config.tag_name_escalate });
 		// get the existing tags of the post
 		const postTags = message.channel.appliedTags;
 
@@ -101,7 +102,7 @@ client.on('messageCreate', async (message) => {
 							content: `🔔 <@${message.channel.ownerId}>`
 						});
 
-						// then archive and lock it
+						// then archive / close it
 						message.channel.edit({
 							appliedTags: tags,
 							archived: true
@@ -120,7 +121,7 @@ client.on('messageCreate', async (message) => {
 							sendData({
 								post_id: postId,
 								resolution_time: resolutionTime,
-								resolved_by: resolvedBy
+								resolved_by: resolvedBy,
 							}, config.datasheet_resolve);
 						}
 
@@ -142,7 +143,7 @@ client.on('messageCreate', async (message) => {
 							content: `🔔 <@${message.channel.ownerId}>`
 						});
 
-						// then archive and lock it
+						// then archive / close it
 						message.channel.edit({
 							appliedTags: tags,
 							archived: true
@@ -161,8 +162,51 @@ client.on('messageCreate', async (message) => {
 							sendData({
 								post_id: postId,
 								close_time: resolutionTime,
-								closed_by: resolvedBy
+								closed_by: resolvedBy,
 							}, config.datasheet_close);
+						}
+
+					}
+
+					// functions for escalation command
+					if (message.content.includes(config.command_escalate) && getURLFromMessage(message.content).length) {
+
+						// data for resolve command
+						// collect tags
+						let initialTags = [escalateTag[0].id,...postTags];
+						let tags = [...new Set(initialTags)];
+						const escalationLink = getURLFromMessage(message.content);
+
+						// send embed message upon executing the escalate command
+						await message.channel.send({
+							embeds: [
+								sendEmbedMessage(`${config.reminder_escalate}`)
+							],
+							content: `🔔 <@${message.channel.ownerId}>`
+						});
+
+						// then update the tags
+						message.channel.edit({
+							appliedTags: tags
+						});
+
+						// check if there's a mentioned user
+						if (mention.users.first()) {
+							// send the data, use the mentioned user as resolvedBy
+							sendData({
+								post_id: postId,
+								escalation_time: resolutionTime,
+								escalated_by: mention.users.first().username,
+								escalation_link: escalationLink[0],
+							}, config.datasheet_escalate);
+						} else {
+							// send the data with the one who sends the command
+							sendData({
+								post_id: postId,
+								escalation_time: resolutionTime,
+								escalated_by: resolvedBy,
+								escalation_link: escalationLink[0],
+							}, config.datasheet_escalate);
 						}
 
 					}
@@ -261,9 +305,12 @@ client.on('threadCreate', async post => {
 	const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
 	const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
 	const closeTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_close}!A2:B,2,0))`;
+	const escalationTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_close}!A2:B,2,0))`;
 	const responder = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_response}!A2:A,${config.datasheet_response}!C2:C},2,0))`;
 	const resolvedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_resolve}!A2:A,${config.datasheet_resolve}!C2:C},2,0))`;
 	const closedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_close}!A2:A,${config.datasheet_close}!C2:C},2,0))`;
+	const escalatedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_escalate}!A2:A,${config.datasheet_escalate}!C2:C},2,0))`;
+	const escalationLink = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_escalate}!A2:A,${config.datasheet_escalate}!D2:D},2,0))`;
 
 	// send the data
 	sendData({
@@ -278,7 +325,10 @@ client.on('threadCreate', async post => {
 		resolution_time: resolutionTime,
 		resolved_by: resolvedBy,
 		close_time: closeTime,
-		closed_by: closedBy
+		closed_by: closedBy,
+		escalation_time: escalationTime,
+		escalated_by: escalatedBy,
+		escalation_link: escalationLink,
 	}, config.datasheet_init);
 });
 
