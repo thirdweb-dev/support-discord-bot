@@ -169,7 +169,7 @@ client.on('messageCreate', async (message) => {
 					}
 
 					// functions for escalation command
-					if (message.content.includes(config.command_escalate) && getURLFromMessage(message.content).length) {
+					if (message.content.includes(config.command_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
 
 						// data for resolve command
 						// collect tags
