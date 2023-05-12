@@ -31,8 +31,15 @@ const getUsernameFromId = async (id) => {
 	return (await client.users.fetch(id)).username;
 }
 
+const getURLFromMessage = (message) => {
+	const regex = /(https?:\/\/[^\s]+)/g;
+	const url = message.match(regex);
+	return url;
+}
+
 module.exports = {
     sendEmbedMessage,
     formatTime,
-    getUsernameFromId
+    getUsernameFromId,
+	getURLFromMessage
 }

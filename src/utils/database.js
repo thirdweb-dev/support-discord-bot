@@ -39,6 +39,11 @@ const sendData = async (data, datasheet) => {
 	if (datasheet === config.datasheet_close) {
 		await sheet.addRow(data);
 	};
+
+	// check if the data will be send to escalate sheet
+	if (datasheet === config.datasheet_escalate) {
+		await sheet.addRow(data);
+	};
 }
 
 module.exports = {
