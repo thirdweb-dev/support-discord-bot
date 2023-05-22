@@ -87,11 +87,12 @@ client.on('messageCreate', async (message) => {
 					const resolvedBy = member.user.username;
 
 					// functions for resolve command
-					if (message.content.includes(config.command_resolve)) {
+					if (message.content.includes(config.command_resolve) || message.content.includes(config.command_sc_resolve)) {
 
-						// data for resolve command
-						// collect tags
-						let initialTags = [resolutionTag[0].id,...postTags];
+						// get existing tags and add resolution tag to it
+						let initialTags = [resolutionTag[0].id,...postTags].filter((item) => { 
+							return item != escalateTag[0].id 
+						});
 						let tags = [...new Set(initialTags)];
 
 						// send embed message upon executing the resolve command
@@ -128,7 +129,7 @@ client.on('messageCreate', async (message) => {
 					}
 
 					// functions for close command
-					if (message.content.includes(config.command_close)) {
+					if (message.content.includes(config.command_close) || message.content.includes(config.command_sc_close)) {
 
 						// data for resolve command
 						// collect tags
@@ -169,7 +170,7 @@ client.on('messageCreate', async (message) => {
 					}
 
 					// functions for escalation command
-					if (message.content.includes(config.command_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
+					if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
 
 						// data for resolve command
 						// collect tags
