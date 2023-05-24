@@ -68,10 +68,11 @@ client.on('messageCreate', async (message) => {
 		const resolutionTag = post.availableTags.filter((item) => { return item.name == config.tag_name_resolve });
 		const closeTag = post.availableTags.filter((item) => { return item.name == config.tag_name_close });
 		const escalateTag = post.availableTags.filter((item) => { return item.name == config.tag_name_escalate });
+		const bugTag = post.availableTags.filter((item) => { return item.name == config.tag_name_bug });
 		// get the existing tags of the post
 		const postTags = message.channel.appliedTags;
 
-		// check if the command has the prefix and includes "resolve"
+		// check if the message has the command prefix
 		if (message.content.startsWith(config.command_prefix)) {
 			await message.delete(); // delete the commmand message
 			
@@ -83,15 +84,15 @@ client.on('messageCreate', async (message) => {
 
 					// gather data
 					const postId = message.channel.id;
-					const resolutionTime = formatTime(message.createdTimestamp);
-					const resolvedBy = member.user.username;
+					const statusTime = formatTime(message.createdTimestamp);
+					const statusBy = member.user.username;
 
 					// functions for resolve command
-					if (message.content.includes(config.command_resolve)) {
-
-						// data for resolve command
-						// collect tags
-						let initialTags = [resolutionTag[0].id,...postTags];
+					if (message.content.includes(config.command_resolve) || message.content.includes(config.command_sc_resolve)) {
+						// collect tags and add resolve tag
+						let initialTags = [resolutionTag[0].id,...postTags].filter((item) => { 
+							return item != escalateTag[0].id 
+						});
 						let tags = [...new Set(initialTags)];
 
 						// send embed message upon executing the resolve command
@@ -113,25 +114,23 @@ client.on('messageCreate', async (message) => {
 							// send the data, use the mentioned user as resolvedBy
 							sendData({
 								post_id: postId,
-								resolution_time: resolutionTime,
+								resolution_time: statusTime,
 								resolved_by: mention.users.first().username,
 							}, config.datasheet_resolve);
 						} else {
 							// send the data with the one who sends the command
 							sendData({
 								post_id: postId,
-								resolution_time: resolutionTime,
-								resolved_by: resolvedBy,
+								resolution_time: statusTime,
+								resolved_by: statusBy,
 							}, config.datasheet_resolve);
 						}
 
 					}
 
 					// functions for close command
-					if (message.content.includes(config.command_close)) {
-
-						// data for resolve command
-						// collect tags
+					if (message.content.includes(config.command_close) || message.content.includes(config.command_sc_close)) {
+						// collect tags and add close tag
 						let initialTags = [closeTag[0].id,...postTags];
 						let tags = [...new Set(initialTags)];
 
@@ -154,25 +153,23 @@ client.on('messageCreate', async (message) => {
 							// send the data, use the mentioned user as resolvedBy
 							sendData({
 								post_id: postId,
-								close_time: resolutionTime,
+								close_time: statusTime,
 								closed_by: mention.users.first().username,
 							}, config.datasheet_close);
 						} else {
 							// send the data with the one who sends the command
 							sendData({
 								post_id: postId,
-								close_time: resolutionTime,
-								closed_by: resolvedBy,
+								close_time: statusTime,
+								closed_by: statusBy,
 							}, config.datasheet_close);
 						}
 
 					}
 
 					// functions for escalation command
-					if (message.content.includes(config.command_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
-
-						// data for resolve command
-						// collect tags
+					if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
+						// collect tags and add escalation tag
 						let initialTags = [escalateTag[0].id,...postTags];
 						let tags = [...new Set(initialTags)];
 						const escalationLink = getURLFromMessage(message.content);
@@ -195,7 +192,7 @@ client.on('messageCreate', async (message) => {
 							// send the data, use the mentioned user as resolvedBy
 							sendData({
 								post_id: postId,
-								escalation_time: resolutionTime,
+								escalation_time: statusTime,
 								escalated_by: mention.users.first().username,
 								escalation_link: escalationLink[0],
 							}, config.datasheet_escalate);
@@ -203,12 +200,31 @@ client.on('messageCreate', async (message) => {
 							// send the data with the one who sends the command
 							sendData({
 								post_id: postId,
-								escalation_time: resolutionTime,
-								escalated_by: resolvedBy,
+								escalation_time: statusTime,
+								escalated_by: statusBy,
 								escalation_link: escalationLink[0],
 							}, config.datasheet_escalate);
 						}
 
+					}
+
+					// functions for bug command
+					if (message.content.includes(config.command_bug)) {
+						// collect tags and add bug tag
+						let initialTags = [bugTag[0].id,...postTags];
+						let tags = [...new Set(initialTags)];
+
+						// then update the tags
+						message.channel.edit({
+							appliedTags: tags
+						});
+
+						// send the data with the one who sends the command
+						sendData({
+							post_id: postId,
+							status_time: statusTime,
+							status_by: statusBy,
+						}, config.datasheet_bug);
 					}
 
 				} else {
