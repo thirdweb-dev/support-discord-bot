@@ -322,11 +322,13 @@ client.on('threadCreate', async post => {
 	const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
 	const closeTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_close}!A2:B,2,0))`;
 	const escalationTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_escalate}!A2:B,2,0))`;
+	const bugTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_bug}!A2:B,2,0))`;
 	const responder = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_response}!A2:A,${config.datasheet_response}!C2:C},2,0))`;
 	const resolvedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_resolve}!A2:A,${config.datasheet_resolve}!C2:C},2,0))`;
 	const closedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_close}!A2:A,${config.datasheet_close}!C2:C},2,0))`;
 	const escalatedBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_escalate}!A2:A,${config.datasheet_escalate}!C2:C},2,0))`;
 	const escalationLink = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_escalate}!A2:A,${config.datasheet_escalate}!D2:D},2,0))`;
+	const bugBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_bug}!A2:A,${config.datasheet_bug}!C2:C},2,0))`;
 
 	// send the data
 	sendData({
@@ -345,6 +347,8 @@ client.on('threadCreate', async post => {
 		escalation_time: escalationTime,
 		escalated_by: escalatedBy,
 		escalation_link: escalationLink,
+		bug_time: bugTime,
+		bug_by: bugBy
 	}, config.datasheet_init);
 });
 
