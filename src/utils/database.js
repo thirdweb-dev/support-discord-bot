@@ -19,15 +19,17 @@ const sendData = async (data, datasheet) => {
   // load the "initial" sheet
   await doc.loadInfo();
   const sheet = doc.sheetsByTitle[datasheet];
-  const toAddRow = [
-    config.datasheet_init,
-    config.datasheet_response,
-    config.datasheet_resolve,
-    config.datasheet_close,
-    config.datasheet_escalate,
-    config.datasheet_bug,
-  ].includes(datasheet);
-  if (toAddRow) await sheet.addRow(data);
+  if (
+    [
+      config.datasheet_init,
+      config.datasheet_response,
+      config.datasheet_resolve,
+      config.datasheet_close,
+      config.datasheet_escalate,
+      config.datasheet_bug,
+    ].includes(datasheet)
+  )
+    await sheet.addRow(data);
 };
 
 module.exports = {
