@@ -35,7 +35,7 @@ const client = new Client({
 
 // listen to post messages
 client.on('messageCreate', async (message) => {
-	const { content, author, member, mention, channel, guild } = message;
+	const { content, author, member, mention, channel, guild, mentions } = message;
 	if (author.bot) return;
 	
 	// check ping
@@ -48,7 +48,7 @@ client.on('messageCreate', async (message) => {
 	}
 
 	// respond to user if the bot mentioned specifically not with everyone
-	if (message.mentions.has(client.user) && !message.mentions.everyone) {
+	if (mentions.has(client.user) && !mentions.everyone) {
 		// convert this to embed message.reply({config.mention_message);
 		message.reply({ embeds: [
 			sendEmbedMessage(config.reminder_mention)
@@ -219,10 +219,10 @@ client.on('messageCreate', async (message) => {
 		for (let i = fetchMessagesArray.length - 1; i >= 0; i--) {
 
 			// get the member details from the author id in the data from the messages
-			const member = await guild.members.fetch(fetchMessagesArray[i][1].author.id);
+			const _member = await guild.members.fetch(fetchMessagesArray[i][1].author.id);
 
 			// check each messages for mod message, then break it if found the first message from support role
-			if (hasAnyRoleIds) {
+			if (_member.roles.cache.hasAny(...roleIDs)) {
 				// check if the current message is first message inside the thread from support role
 				if (message.id === fetchMessagesArray[i][0] && content.includes('fixresponse')) {
 					// capture the date and time
