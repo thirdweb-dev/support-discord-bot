@@ -35,7 +35,7 @@ const client = new Client({
 
 // listen to post messages
 client.on('messageCreate', async (message) => {
-	const { content, author, member, mention } = message;
+	const { content, author, member, mention, channel, guild } = message;
 	if (author.bot) return;
 	
 	// check ping
@@ -56,8 +56,8 @@ client.on('messageCreate', async (message) => {
 	}
 
 	// get the forum details, from posts to tags
-	const forum = client.guilds.cache.get(message.guild.id);
-	const post = forum.channels.cache.get(message.channel.parent.id);
+	const forum = client.guilds.cache.get(guild.id);
+	const post = forum.channels.cache.get(channel.parent.id);
 
 	// check if the message is from the forum post
 	if (typeof post.availableTags === 'undefined') return;
@@ -68,18 +68,18 @@ client.on('messageCreate', async (message) => {
 	const escalateTag = post.availableTags.filter((item) => item.name == config.tag_name_escalate);
 	const bugTag = post.availableTags.filter((item) => item.name == config.tag_name_bug);
 	// get the existing tags of the post
-	const postTags = message.channel.appliedTags;
-
+	const postTags = channel.appliedTags;
+	const hasAnyRoleIds = member.roles.cache.hasAny(...roleIDs);
 	// check if the message has the command prefix
 	if (content.startsWith(config.command_prefix)) {
 		message.delete(); // delete the command message for better visuals (no need to await this)
 		
 		// check if the message is in the forum post and from the support role
-		if (message.channel.type !== ChannelType.PublicThread || !member.roles.cache.hasAny(...roleIDs)) return;
+		if (channel.type !== ChannelType.PublicThread || !hasAnyRoleIds) return;
 
 		// Only allow a post to have maximum 5 tags
 		if (postTags.length >= 5) {
-			await message.channel.send({
+			await channel.send({
 				embeds: [
 					sendEmbedMessage(`${config.reminder_max_tags}`)
 				],
@@ -92,7 +92,7 @@ client.on('messageCreate', async (message) => {
 		}
 
 		// gather data
-		const postId = message.channel.id;
+		const postId = channel.id;
 		const statusTime = formatTime(message.createdTimestamp);
 		const statusBy = member.user.username;
 
@@ -103,15 +103,15 @@ client.on('messageCreate', async (message) => {
 			let tags = [...new Set(initialTags)];
 
 			// send embed message upon executing the resolve command
-			await message.channel.send({ 
+			await channel.send({ 
 				embeds: [
 					sendEmbedMessage(`${config.reminder_resolve}`)
 				],
-				content: `🔔 <@${message.channel.ownerId}>`
+				content: `🔔 <@${channel.ownerId}>`
 			});
 
 			// then archive / close it
-			message.channel.edit({
+			channel.edit({
 				appliedTags: tags,
 				archived: true
 			});
@@ -126,21 +126,21 @@ client.on('messageCreate', async (message) => {
 		}
 
 		// functions for close command
-		else if (message.content.includes(config.command_close) || message.content.includes(config.command_sc_close)) {
+		else if (content.includes(config.command_close) || content.includes(config.command_sc_close)) {
 			// collect tags and add close tag
 			let initialTags = [closeTag[0].id,...postTags];
 			let tags = [...new Set(initialTags)];
 
 			// send embed message upon executing the close command
-			await message.channel.send({ 
+			await channel.send({ 
 				embeds: [
 					sendEmbedMessage(`${config.reminder_close}`)
 				],
-				content: `🔔 <@${message.channel.ownerId}>`
+				content: `🔔 <@${channel.ownerId}>`
 			});
 
 			// then archive / close it
-			message.channel.edit({
+			channel.edit({
 				appliedTags: tags,
 				archived: true
 			});
@@ -155,22 +155,22 @@ client.on('messageCreate', async (message) => {
 		}
 
 		// functions for escalation command
-		else if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
+		else if (content.includes(config.command_escalate) || content.includes(config.command_sc_escalate) && getURLFromMessage(content) && getURLFromMessage(content).length) {
 			// collect tags and add escalation tag
 			const initialTags = [escalateTag[0].id,...postTags];
 			const tags = [...new Set(initialTags)];
-			const escalationLink = getURLFromMessage(message.content);
+			const escalationLink = getURLFromMessage(content);
 
 			// send embed message upon executing the escalate command
-			await message.channel.send({
+			await channel.send({
 				embeds: [
 					sendEmbedMessage(`${config.reminder_escalate}`)
 				],
-				content: `🔔 <@${message.channel.ownerId}>`
+				content: `🔔 <@${channel.ownerId}>`
 			});
 
 			// then update the tags
-			message.channel.edit({
+			channel.edit({
 				appliedTags: tags
 			});
 
@@ -185,13 +185,13 @@ client.on('messageCreate', async (message) => {
 		}
 
 		// functions for bug command
-		else if (message.content.includes(config.command_bug)) {
+		else if (content.includes(config.command_bug)) {
 			// collect tags and add bug tag
 			const initialTags = [bugTag[0].id,...postTags];
 			const tags = [...new Set(initialTags)];
 
 			// then update the tags
-			message.channel.edit({
+			channel.edit({
 				appliedTags: tags
 			});
 
@@ -208,10 +208,10 @@ client.on('messageCreate', async (message) => {
 	 * Logic to capture the first response from the forum post
 	 */
 	// check the the message if it is in the thread and from the support role
-	else if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
+	else if (channel.type === ChannelType.PublicThread && hasAnyRoleIds) {
 		// get details about the thread and the message
-		const postId = message.channel.id;
-		const fetchMessages = await message.channel.messages.fetch({ after: postId });
+		const postId = channel.id;
+		const fetchMessages = await channel.messages.fetch({ after: postId });
 		const fetchMessagesArray = Array.from(fetchMessages); // convert the fetch data to array
 		// check if the fetch message array is empty
 		if (!fetchMessagesArray.length) return;
@@ -219,12 +219,12 @@ client.on('messageCreate', async (message) => {
 		for (let i = fetchMessagesArray.length - 1; i >= 0; i--) {
 
 			// get the member details from the author id in the data from the messages
-			const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
+			const member = await guild.members.fetch(fetchMessagesArray[i][1].author.id);
 
 			// check each messages for mod message, then break it if found the first message from support role
-			if (member.roles.cache.hasAny(...roleIDs)) {
+			if (hasAnyRoleIds) {
 				// check if the current message is first message inside the thread from support role
-				if (message.id === fetchMessagesArray[i][0] && message.content.includes('fixresponse')) {
+				if (message.id === fetchMessagesArray[i][0] && content.includes('fixresponse')) {
 					// capture the date and time
 					const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
 					const firstResponder = fetchMessagesArray[i][1].author.username;
