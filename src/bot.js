@@ -253,7 +253,7 @@ client.on('messageCreate', async (message) => {
 			// check if the fetch message array is empty
 			if (fetchMessagesArray.length) {
 				// check the messages for the first messages from the support role
-				for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
+				for (let i = fetchMessagesArray.length - 1; i >= 0; i--) {
 
 					// get the member details from the author id in the data from the messages
 					const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
