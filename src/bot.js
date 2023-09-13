@@ -95,7 +95,7 @@ client.on('messageCreate', async (message) => {
 		const postId = channel.id;
 		const statusTime = formatTime(message.createdTimestamp);
 		const statusBy = member.user.username;
-
+		const userTag = (mention.users.first()?.username) ? mention.users.first().username : statusBy;
 		// functions for resolve command
 		if (content.includes(config.command_resolve) || content.includes(config.command_sc_resolve)) {
 			// collect tags and add resolve tag
@@ -115,21 +115,18 @@ client.on('messageCreate', async (message) => {
 				appliedTags: tags,
 				archived: true
 			});
-
-			// check if there's a mentioned user
-			const resolvedBy = (mention.users?.first()?.username) ?? statusBy;
 			sendData({
 				post_id: postId,
 				resolution_time: statusTime,
-				resolved_by: resolvedBy,
+				resolved_by: userTag,
 			}, config.datasheet_resolve);
 		}
 
 		// functions for close command
 		else if (content.includes(config.command_close) || content.includes(config.command_sc_close)) {
 			// collect tags and add close tag
-			let initialTags = [closeTag[0].id,...postTags];
-			let tags = [...new Set(initialTags)];
+			const initialTags = [closeTag[0].id,...postTags];
+			const tags = [...new Set(initialTags)];
 
 			// send embed message upon executing the close command
 			await channel.send({ 
@@ -144,13 +141,10 @@ client.on('messageCreate', async (message) => {
 				appliedTags: tags,
 				archived: true
 			});
-
-			// check if there's a mentioned user
-			const closedBy = (mention.users.first()?.username) ? mention.users.first().username : statusBy;
 			sendData({
 				post_id: postId,
 				close_time: statusTime,
-				closed_by: closedBy,
+				closed_by: userTag,
 			}, config.datasheet_close);
 		}
 
@@ -174,12 +168,10 @@ client.on('messageCreate', async (message) => {
 				appliedTags: tags
 			});
 
-			// check if there's a mentioned user
-			const escalatedBy = (mention.users.first()?.username) ? mention.users.first().username : statusBy;
 			sendData({
 				post_id: postId,
 				escalation_time: statusTime,
-				escalated_by: escalatedBy,
+				escalated_by: userTag,
 				escalation_link: escalationLink[0],
 			}, config.datasheet_escalate);
 		}
