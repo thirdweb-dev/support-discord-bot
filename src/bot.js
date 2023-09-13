@@ -75,155 +75,132 @@ client.on('messageCreate', async (message) => {
 		message.delete(); // delete the command message for better visuals (no need to await this)
 		
 		// check if the message is in the forum post and from the support role
-		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
+		if (message.channel.type !== ChannelType.PublicThread || !member.roles.cache.hasAny(...roleIDs)) return;
 
-			// check if the post has fewer tags
-			if (postTags.length < 5) {
+		// Only allow a post to have maximum 5 tags
+		if (postTags.length >= 5) {
+			await message.channel.send({
+				embeds: [
+					sendEmbedMessage(`${config.reminder_max_tags}`)
+				],
+				content: `🔔 <@${message.author.id}>`
+			})
+			.then(message => {
+				setTimeout(() => message.delete(), 10000) // delete message after 15s
+			});
+			return;
+		}
 
-				// gather data
-				const postId = message.channel.id;
-				const statusTime = formatTime(message.createdTimestamp);
-				const statusBy = member.user.username;
+		// gather data
+		const postId = message.channel.id;
+		const statusTime = formatTime(message.createdTimestamp);
+		const statusBy = member.user.username;
 
-				// functions for resolve command
-				if (content.includes(config.command_resolve) || content.includes(config.command_sc_resolve)) {
-					// collect tags and add resolve tag
-					let initialTags = [resolutionTag[0].id,...postTags].filter((item) => item != escalateTag[0].id);
-					let tags = [...new Set(initialTags)];
+		// functions for resolve command
+		if (content.includes(config.command_resolve) || content.includes(config.command_sc_resolve)) {
+			// collect tags and add resolve tag
+			let initialTags = [resolutionTag[0].id,...postTags].filter((item) => item != escalateTag[0].id);
+			let tags = [...new Set(initialTags)];
 
-					// send embed message upon executing the resolve command
-					await message.channel.send({ 
-						embeds: [
-							sendEmbedMessage(`${config.reminder_resolve}`)
-						],
-						content: `🔔 <@${message.channel.ownerId}>`
-					});
+			// send embed message upon executing the resolve command
+			await message.channel.send({ 
+				embeds: [
+					sendEmbedMessage(`${config.reminder_resolve}`)
+				],
+				content: `🔔 <@${message.channel.ownerId}>`
+			});
 
-					// then archive / close it
-					message.channel.edit({
-						appliedTags: tags,
-						archived: true
-					});
+			// then archive / close it
+			message.channel.edit({
+				appliedTags: tags,
+				archived: true
+			});
 
-					// check if there's a mentioned user
-					const resolvedBy = (mention.users?.first()?.username) ?? statusBy;
-					sendData({
-						post_id: postId,
-						resolution_time: statusTime,
-						resolved_by: resolvedBy,
-					}, config.datasheet_resolve);
-				}
+			// check if there's a mentioned user
+			const resolvedBy = (mention.users?.first()?.username) ?? statusBy;
+			sendData({
+				post_id: postId,
+				resolution_time: statusTime,
+				resolved_by: resolvedBy,
+			}, config.datasheet_resolve);
+		}
 
-				// functions for close command
-				else if (message.content.includes(config.command_close) || message.content.includes(config.command_sc_close)) {
-					// collect tags and add close tag
-					let initialTags = [closeTag[0].id,...postTags];
-					let tags = [...new Set(initialTags)];
+		// functions for close command
+		else if (message.content.includes(config.command_close) || message.content.includes(config.command_sc_close)) {
+			// collect tags and add close tag
+			let initialTags = [closeTag[0].id,...postTags];
+			let tags = [...new Set(initialTags)];
 
-					// send embed message upon executing the close command
-					await message.channel.send({ 
-						embeds: [
-							sendEmbedMessage(`${config.reminder_close}`)
-						],
-						content: `🔔 <@${message.channel.ownerId}>`
-					});
+			// send embed message upon executing the close command
+			await message.channel.send({ 
+				embeds: [
+					sendEmbedMessage(`${config.reminder_close}`)
+				],
+				content: `🔔 <@${message.channel.ownerId}>`
+			});
 
-					// then archive / close it
-					message.channel.edit({
-						appliedTags: tags,
-						archived: true
-					});
+			// then archive / close it
+			message.channel.edit({
+				appliedTags: tags,
+				archived: true
+			});
 
-					// check if there's a mentioned user
-					if (mention.users.first()) {
-						// send the data, use the mentioned user as resolvedBy
-						sendData({
-							post_id: postId,
-							close_time: statusTime,
-							closed_by: mention.users.first().username,
-						}, config.datasheet_close);
-					} else {
-						// send the data with the one who sends the command
-						sendData({
-							post_id: postId,
-							close_time: statusTime,
-							closed_by: statusBy,
-						}, config.datasheet_close);
-					}
+			// check if there's a mentioned user
+			const closedBy = (mention.users.first()?.username) ? mention.users.first().username : statusBy;
+			sendData({
+				post_id: postId,
+				close_time: statusTime,
+				closed_by: closedBy,
+			}, config.datasheet_close);
+		}
 
-				}
+		// functions for escalation command
+		else if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
+			// collect tags and add escalation tag
+			const initialTags = [escalateTag[0].id,...postTags];
+			const tags = [...new Set(initialTags)];
+			const escalationLink = getURLFromMessage(message.content);
 
-				// functions for escalation command
-				else if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
-					// collect tags and add escalation tag
-					let initialTags = [escalateTag[0].id,...postTags];
-					let tags = [...new Set(initialTags)];
-					const escalationLink = getURLFromMessage(message.content);
+			// send embed message upon executing the escalate command
+			await message.channel.send({
+				embeds: [
+					sendEmbedMessage(`${config.reminder_escalate}`)
+				],
+				content: `🔔 <@${message.channel.ownerId}>`
+			});
 
-					// send embed message upon executing the escalate command
-					await message.channel.send({
-						embeds: [
-							sendEmbedMessage(`${config.reminder_escalate}`)
-						],
-						content: `🔔 <@${message.channel.ownerId}>`
-					});
+			// then update the tags
+			message.channel.edit({
+				appliedTags: tags
+			});
 
-					// then update the tags
-					message.channel.edit({
-						appliedTags: tags
-					});
+			// check if there's a mentioned user
+			const escalatedBy = (mention.users.first()?.username) ? mention.users.first().username : statusBy;
+			sendData({
+				post_id: postId,
+				escalation_time: statusTime,
+				escalated_by: escalatedBy,
+				escalation_link: escalationLink[0],
+			}, config.datasheet_escalate);
+		}
 
-					// check if there's a mentioned user
-					if (mention.users.first()) {
-						// send the data, use the mentioned user as resolvedBy
-						sendData({
-							post_id: postId,
-							escalation_time: statusTime,
-							escalated_by: mention.users.first().username,
-							escalation_link: escalationLink[0],
-						}, config.datasheet_escalate);
-					} else {
-						// send the data with the one who sends the command
-						sendData({
-							post_id: postId,
-							escalation_time: statusTime,
-							escalated_by: statusBy,
-							escalation_link: escalationLink[0],
-						}, config.datasheet_escalate);
-					}
+		// functions for bug command
+		else if (message.content.includes(config.command_bug)) {
+			// collect tags and add bug tag
+			const initialTags = [bugTag[0].id,...postTags];
+			const tags = [...new Set(initialTags)];
 
-				}
+			// then update the tags
+			message.channel.edit({
+				appliedTags: tags
+			});
 
-				// functions for bug command
-				else if (message.content.includes(config.command_bug)) {
-					// collect tags and add bug tag
-					let initialTags = [bugTag[0].id,...postTags];
-					let tags = [...new Set(initialTags)];
-
-					// then update the tags
-					message.channel.edit({
-						appliedTags: tags
-					});
-
-					// send the data with the one who sends the command
-					sendData({
-						post_id: postId,
-						status_time: statusTime,
-						status_by: statusBy,
-					}, config.datasheet_bug);
-				}
-
-			} else {
-				message.channel.send({
-					embeds: [
-						sendEmbedMessage(`${config.reminder_max_tags}`)
-					],
-					content: `🔔 <@${message.author.id}>`
-				})
-				.then(message => {
-					setTimeout(() => message.delete(), 10000) // delete message after 15s
-				});
-			}
+			// send the data with the one who sends the command
+			sendData({
+				post_id: postId,
+				status_time: statusTime,
+				status_by: statusBy,
+			}, config.datasheet_bug);
 		}
 	}
 
@@ -237,42 +214,29 @@ client.on('messageCreate', async (message) => {
 		const fetchMessages = await message.channel.messages.fetch({ after: postId });
 		const fetchMessagesArray = Array.from(fetchMessages); // convert the fetch data to array
 		// check if the fetch message array is empty
-		if (fetchMessagesArray.length) {
+		if (!fetchMessagesArray.length) return;
 			// check the messages for the first messages from the support role
-			for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
+		for (let i = fetchMessagesArray.length - 1; i >= 0; i--) {
 
-				// get the member details from the author id in the data from the messages
-				const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
+			// get the member details from the author id in the data from the messages
+			const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
 
-				// check each messages for mod message, then break it if found the first message from support role
-				if (member.roles.cache.hasAny(...roleIDs)) {
-					
-					// check if the current message is first message inside the thread from support role
-					if (message.id === fetchMessagesArray[i][0] || message.content.startsWith(config.command_prefix) && message.content.includes('fixresponse')) {
-
-						// check if the message is from the command, if yes, delete it
-						if( message.content.startsWith(config.command_prefix) && message.content.includes('fixresponse') ) {
-							await message.delete();
-						}
-
-						// capture the date and time
-						const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
-						const firstResponder = fetchMessagesArray[i][1].author.username;
-
-						// and send it
-						sendData({
-							post_id: postId,
-							first_response: firstResponse,
-							responder: firstResponder
-						}, config.datasheet_response);
-
-						// log if the first response has been sent
-						console.log(`[log]: first response sent to database with post id of ${postId}`);
-					}
-
-					// stop the loop
-					break;
+			// check each messages for mod message, then break it if found the first message from support role
+			if (member.roles.cache.hasAny(...roleIDs)) {
+				// check if the current message is first message inside the thread from support role
+				if (message.id === fetchMessagesArray[i][0] && message.content.includes('fixresponse')) {
+					// capture the date and time
+					const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
+					const firstResponder = fetchMessagesArray[i][1].author.username;
+					sendData({
+						post_id: postId,
+						first_response: firstResponse,
+						responder: firstResponder
+					}, config.datasheet_response);
+					// log if the first response has been sent
+					console.log(`[log]: first response sent to database with post id of ${postId}`);
 				}
+				break;
 			}
 		}
 	}
