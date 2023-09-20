@@ -59,18 +59,31 @@ client.on("messageCreate", async (message) => {
   if (typeof post.availableTags === "undefined") return;
 
   // filter the tags to get the resolution tag name ID
-  const resolutionTag = post.availableTags.filter(
-    (item) => item.name == config.tag_name_resolve
-  );
-  const closeTag = post.availableTags.filter(
-    (item) => item.name == config.tag_name_close
-  );
-  const escalateTag = post.availableTags.filter(
-    (item) => item.name == config.tag_name_escalate
-  );
-  const bugTag = post.availableTags.filter(
-    (item) => item.name == config.tag_name_bug
-  );
+  const resolutionTag = [];
+  const closeTag = [];
+  const escalateTag = [];
+  const bugTag = [];
+
+  for (let i = 0; i < post.availableTags.length; i++) {
+    const item = post.availableTags[i];
+    switch (item.name) {
+      case config.tag_name_resolve:
+        resolutionTag.push(item);
+        break;
+      case config.tag_name_close:
+        closeTag.push(item);
+        break;
+      case config.tag_name_escalate:
+        escalateTag, push(item);
+        break;
+      case config.tag_name_bug:
+        bugTag.push(item);
+        break;
+      default:
+        break;
+    }
+  }
+
   // get the existing tags of the post
   const postTags = channel.appliedTags;
   const hasAnyRoleIds = member.roles.cache.hasAny(...roleIDs);
