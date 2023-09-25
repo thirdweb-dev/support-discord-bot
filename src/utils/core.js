@@ -12,7 +12,7 @@ const sendEmbedMessage = (message) => {
 
 /**
  * format time according to UTC
- * @param {number} date - epoch timestamp
+ * @param {string} date - epoch timestamp
  * @returns time and date format
  */
 const formatTime = (date) => {
