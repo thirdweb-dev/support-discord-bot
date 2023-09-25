@@ -297,7 +297,7 @@ client.on("threadCreate", async (post) => {
   const forumTags = [];
 
   // Send message
-  const allowedChannels = []; // @Waren
+  const allowedChannels = []; // Only respond in appropriate channels
   if (true) {
     post.send(
       "Thanks for reaching out. Please take a look at this docs <link> to learn how to provide a better context so that you can help us help you"
