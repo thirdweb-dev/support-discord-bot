@@ -173,11 +173,11 @@ client.on('messageCreate', async (message) => {
 						let tags = [...new Set(initialTags)];
 
 						// send embed message upon executing the close command
-						await message.channel.send({ 
-							embeds: [
-								sendEmbedMessage(`${config.reminder_close}`)
-							]
-						});
+						// await message.channel.send({ 
+						// 	embeds: [
+						// 		sendEmbedMessage(`${config.reminder_close}`)
+						// 	]
+						// });
 
 						// then archive / close it
 						message.channel.edit({
