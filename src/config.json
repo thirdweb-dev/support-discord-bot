@@ -7,7 +7,6 @@
     "command_bug": "bug",
     "command_sc_resolve": "res",
     "command_sc_close": "cls",
-    "command_sc_close_no_mention": "!cls",
     "command_sc_escalate": "esc",
     "command_reopen": "reopen",
     "tag_name_resolve": "Solved",
