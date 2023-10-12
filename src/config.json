@@ -2,6 +2,7 @@
     "command_prefix": "!",
     "command_resolve": "resolve",
     "command_close": "close",
+    "command_end": "end",
     "command_escalate": "escalate",
     "command_bug": "bug",
     "command_sc_resolve": "res",

@@ -167,6 +167,42 @@ client.on('messageCreate', async (message) => {
 
 					}
 
+					else if (message.content.includes(config.command_end)) {
+						// collect tags and add close tag
+						let initialTags = [closeTag[0].id,...postTags];
+						let tags = [...new Set(initialTags)];
+
+						// send embed message upon executing the close command
+						await message.channel.send({ 
+							embeds: [
+								sendEmbedMessage(`${config.reminder_close}`)
+							]
+						});
+
+						// then archive / close it
+						message.channel.edit({
+							appliedTags: tags,
+							archived: true
+						});
+
+						// check if there's a mentioned user
+						if (mention.users.first()) {
+							// send the data, use the mentioned user as resolvedBy
+							sendData({
+								post_id: postId,
+								close_time: statusTime,
+								closed_by: mention.users.first().username,
+							}, config.datasheet_close);
+						} else {
+							// send the data with the one who sends the command
+							sendData({
+								post_id: postId,
+								close_time: statusTime,
+								closed_by: statusBy,
+							}, config.datasheet_close);
+						}
+					}
+
 					// functions for escalation command
 					if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
 						// collect tags and add escalation tag
