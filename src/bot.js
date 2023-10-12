@@ -176,8 +176,7 @@ client.on('messageCreate', async (message) => {
 						await message.channel.send({ 
 							embeds: [
 								sendEmbedMessage(`${config.reminder_close}`)
-							],
-							content: `🔔`
+							]
 						});
 
 						// then archive / close it
