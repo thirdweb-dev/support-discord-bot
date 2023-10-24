@@ -14,8 +14,7 @@
     "discord.js": "^14.10.2",
     "dotenv": "^16.0.3",
     "fs-extra": "^11.1.1",
-    "google-spreadsheet": "^3.3.0",
-    "moment": "^2.29.4"
+    "google-spreadsheet": "^3.3.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
