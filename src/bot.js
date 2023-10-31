@@ -8,6 +8,7 @@ const {
 const config = require("./config.json");
 const { sendEmbedMessage, formatTime, getURLFromMessage } = require("./utils/core");
 const { sendData } = require("./utils/database");
+const { get } = require("http");
 
 require("dotenv").config();
 
@@ -323,6 +324,16 @@ client.on('messageCreate', async (message) => {
 						// stop the loop
 						break;
 					}
+				}
+			}
+
+			// detect any links defined from the config file
+			let redirectUrls = config.redirect_tracking.map(item => item.url);
+			for(let redirectUrl of redirectUrls) {
+				if(message.content.includes(redirectUrl)) {
+					console.log("Dectected redirect url: " + redirectUrl);
+					console.log("Sources", getURLFromMessage(message.content));
+					console.log("Link Count", getURLFromMessage(message.content).length);
 				}
 			}
 		}
