@@ -52,7 +52,8 @@ const sendData = async (data, datasheet) => {
 
 	// check if the data will be send to redirect sheet
 	if (datasheet === config.datasheet_redirect) {
-		await sheet.addRow(data);
+		// the data here is being sent in batch (in rows)
+		await sheet.addRows(data);
 	};
 }
 
