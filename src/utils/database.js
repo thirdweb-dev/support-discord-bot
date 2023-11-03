@@ -45,9 +45,15 @@ const sendData = async (data, datasheet) => {
 		await sheet.addRow(data);
 	};
 
-	// check if the data will be send to escalate sheet
+	// check if the data will be send to bug sheet
 	if (datasheet === config.datasheet_bug) {
 		await sheet.addRow(data);
+	};
+
+	// check if the data will be send to redirect sheet
+	if (datasheet === config.datasheet_redirect) {
+		// the data here is being sent in batch (in rows)
+		await sheet.addRows(data);
 	};
 }
 

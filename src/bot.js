@@ -325,6 +325,39 @@ client.on('messageCreate', async (message) => {
 					}
 				}
 			}
+
+			// track the URLs being sent in the threads
+			const redirectData = config.redirect_tracking;
+			const redirectUrls = config.redirect_tracking.map(data => data.url);
+			if (redirectUrls.some(url => message.content.includes(url))) {
+				// capture and prepare the data
+				const urls = await getURLFromMessage(message.content);
+				const postId = message.channel.id;
+				const redirectTime = formatTime(message.createdTimestamp);
+				const redirectBy = message.author.username;
+				const sendUrls = [];
+
+				urls.map(url => {
+					// extract the URL only
+					const urlOnly = new URL(url).hostname;
+					redirectData.map(data => {
+						// get the name of URL for categorization
+						if(urlOnly == data.url) {
+							sendUrls.push({
+								post_id: postId,
+								redirect_time: redirectTime,
+								redirect_by: redirectBy,
+								redirect_url: url,
+								redirect_name: data.name
+							});
+						}
+					})
+				});
+
+				// send data in batch in rows
+				sendData(sendUrls, config.datasheet_redirect);
+			}
+
 		}
 	}
 });
