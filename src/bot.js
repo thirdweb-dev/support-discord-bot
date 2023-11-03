@@ -327,15 +327,26 @@ client.on('messageCreate', async (message) => {
 				}
 			}
 
-			// detect any links defined from the config file
-			let redirectUrls = config.redirect_tracking.map(item => item.url);
-			for(let redirectUrl of redirectUrls) {
-				if(message.content.includes(redirectUrl)) {
-					console.log("Dectected redirect url: " + redirectUrl);
-					console.log("Sources", getURLFromMessage(message.content));
-					console.log("Link Count", getURLFromMessage(message.content).length);
+			const trackedUrls = config.redirect_tracking.map(item => item.url);
+			if (trackedUrls.some(url => message.content.includes(url))) {
+				const urls = await getURLFromMessage(message.content);
+
+				// data capture
+				const postId = message.channel.id;
+				const redirectTime = formatTime(message.createdTimestamp);
+				const redirectBy = message.author.username;
+
+				for(url of urls) {
+					console.log(`URL: ${url}`);
+					sendData({
+						post_id: postId,
+						redirect_time: redirectTime,
+						redirect_by: redirectBy,
+						redirect_url: url
+					}, config.datasheet_redirect);
 				}
 			}
+
 		}
 	}
 });
