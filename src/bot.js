@@ -8,7 +8,6 @@ const {
 const config = require("./config.json");
 const { sendEmbedMessage, formatTime, getURLFromMessage } = require("./utils/core");
 const { sendData } = require("./utils/database");
-const { get } = require("http");
 
 require("dotenv").config();
 
