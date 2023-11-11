@@ -172,13 +172,6 @@ client.on('messageCreate', async (message) => {
 						let initialTags = [closeTag[0].id,...postTags];
 						let tags = [...new Set(initialTags)];
 
-						// send embed message upon executing the close command
-						// await message.channel.send({ 
-						// 	embeds: [
-						// 		sendEmbedMessage(`${config.reminder_close}`)
-						// 	]
-						// });
-
 						// then archive / close it
 						message.channel.edit({
 							appliedTags: tags,
@@ -419,6 +412,11 @@ client.on('threadCreate', async post => {
 		bug_time: bugTime,
 		bug_by: bugBy
 	}, config.datasheet_init);
+
+	// send message to the post
+	post.send({ embeds: [
+		sendEmbedMessage(config.reminder_newpost)
+	] });
 });
 
 // reading events file
