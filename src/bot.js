@@ -106,7 +106,7 @@ client.on('messageCreate', async (message) => {
 						// then archive / close it
 						message.channel.edit({
 							appliedTags: tags,
-							archived: true
+							archived: false
 						});
 
 						// check if there's a mentioned user
