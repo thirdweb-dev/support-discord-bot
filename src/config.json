@@ -1,5 +1,6 @@
 {
     "command_prefix": "!",
+    "command_fix_prefix": "#",
     "command_resolve": "resolve",
     "command_close": "close",
     "command_end": "end",
