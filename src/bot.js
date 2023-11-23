@@ -88,7 +88,14 @@ client.on('messageCreate', async (message) => {
 					const statusBy = member.user.username;
 
 					// functions for resolve command
-					if (message.content == config.command_prefix + config.command_resolve || message.content == config.command_prefix + config.command_sc_resolve) {
+					if (
+						message.content == `${config.command_prefix+config.command_resolve}` || 
+						message.content == `${config.command_prefix+config.command_sc_resolve}` || 
+						message.content == `${config.command_prefix+config.command_sc_resolve} <@${mention.users.first().id}>` || 
+						message.content == `${config.command_prefix+config.command_resolve} <@${mention.users.first().id}>`
+						// TODO: I know, you don't like this, but we need a quick fix that works. If you know how to resolve the issue on how to detect the command with mention, please do so.
+						// I don't recommend using the includes() method because it will trigger the command if the message contains the command key word such as "resolve" or "res"
+					) {
 						// collect tags and add resolve tag
 						let initialTags = [resolutionTag[0].id,...postTags].filter((item) => { 
 							return item != escalateTag[0].id 
