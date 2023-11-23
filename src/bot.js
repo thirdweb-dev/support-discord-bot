@@ -156,7 +156,11 @@ client.on('messageCreate', async (message) => {
 					}
 
 					// functions for close command
-					if (message.content.includes(config.command_close) || message.content.includes(config.command_sc_close)) {
+					if (
+						message.content == `${config.command_prefix+config.command_close}` || 
+						message.content == `${config.command_prefix+config.command_sc_close}` || 
+						message.content == `${config.command_prefix+config.command_sc_close} <@${mention.users.first().id}>` || 
+						message.content == `${config.command_prefix+config.command_close} <@${mention.users.first().id}>`) {
 						// collect tags and add close tag
 						let initialTags = [closeTag[0].id,...postTags];
 						let tags = [...new Set(initialTags)];
@@ -224,7 +228,11 @@ client.on('messageCreate', async (message) => {
 					}
 
 					// functions for escalation command
-					if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
+					if (
+						message.content == `${config.command_prefix+config.command_escalate}` || 
+						message.content == `${config.command_prefix+config.command_sc_escalate}` && 
+						getURLFromMessage(message.content) && 
+						getURLFromMessage(message.content).length) {
 						// collect tags and add escalation tag
 						let initialTags = [escalateTag[0].id,...postTags];
 						let tags = [...new Set(initialTags)];
