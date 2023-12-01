@@ -88,7 +88,7 @@ client.on('messageCreate', async (message) => {
 					const statusBy = member.user.username;
 
 					// functions for resolve command
-					if (message.content == config.command_prefix + config.command_resolve || message.content == config.command_prefix + config.command_sc_resolve) {
+					if (message.content.includes(config.command_resolve) || message.content.includes(config.command_sc_resolve)) {
 						// collect tags and add resolve tag
 						let initialTags = [resolutionTag[0].id,...postTags].filter((item) => { 
 							return item != escalateTag[0].id 
@@ -126,26 +126,6 @@ client.on('messageCreate', async (message) => {
 							}, config.datasheet_resolve);
 						}
 
-					}
-
-					// functions for fix resolve command (this will send the data again to the database)
-					if (message.content == config.command_prefix + config.command_fix_prefix + config.command_resolve) {
-						// check if there's a mentioned user
-						if (mention.users.first()) {
-							// send the data, use the mentioned user as resolvedBy
-							sendData({
-								post_id: postId,
-								resolution_time: statusTime,
-								resolved_by: mention.users.first().username,
-							}, config.datasheet_resolve);
-						} else {
-							// send the data with the one who sends the command
-							sendData({
-								post_id: postId,
-								resolution_time: statusTime,
-								resolved_by: statusBy,
-							}, config.datasheet_resolve);
-						}
 					}
 
 					// functions for close command
@@ -311,10 +291,10 @@ client.on('messageCreate', async (message) => {
 					if (member.roles.cache.hasAny(...roleIDs)) {
 						
 						// check if the current message is first message inside the thread from support role
-						if (message.id === fetchMessagesArray[i][0] || message.content == `${config.command_fix_prefix}response`) {
+						if (message.id === fetchMessagesArray[i][0] || message.content.startsWith(config.command_prefix) && message.content.includes('fixresponse')) {
 
-							// check if the message is from the fix command, if yes, delete it
-							if( message.content.startsWith(config.command_fix_prefix)) {
+							// check if the message is from the command, if yes, delete it
+							if( message.content.startsWith(config.command_prefix) && message.content.includes('fixresponse') ) {
 								await message.delete();
 							}
 
