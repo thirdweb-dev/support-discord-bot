@@ -22,7 +22,7 @@
     "datasheet_bug": "bug",
     "datasheet_redirect": "redirect",
     "utc_offset": -8,
-    "reminder_newpost": "**Welcome to thirdweb support!** \n\nThanks for your question. Our team or community will help as soon as possible. \n\nWant an answer right away? Head to our support site and **[ASK AI](https://support.thirdweb.com)**! \n\nWe've trained our AI assistant on thousands of our resources to help you get an answer in seconds.",
+    "reminder_newpost": "**Welcome to thirdweb support!** \n\nThanks for your question. Our team or community will help as soon as possible. \n\nWant an answer right away? Head to our support site and **[ASK AI](https://support.thirdweb.com)**! \n\nWe've trained our AI assistant on thousands of our resources to help you get an answer in seconds.\n\n⚠️ **ATTENTION** ⚠️\n\n_For **ALL SUPPORT** questions related to the vulnerability and mitigation steps, please **EMAIL** us directly at `support@thirdweb.com` to protect yourself and other users in the community from sharing vulnerable contracts._",
     "reminder_mention": "Hey! If you need help, please read the information in <#1074862134284005396> and post your questions or issues in the <#1029543258822553680> channel. Our team and community members are always ready to help you out. Thank you for building with us!",
     "reminder_max_tags": "Max tags (5) exceeded. Please update the original post with fewer tags and try again.",
     "reminder_close": "Hello! This post was closed due to inactivity, missing information, irrelevant, duplicate or otherwise. If you believe this was a mistake or you wish to re-open, please let us know here and we're happy to do so! For new questions, please create a new post in <#1029543258822553680>. Thank you!",
