@@ -9,6 +9,9 @@ const config = require("./config.json");
 const { sendEmbedMessage, formatTime, getURLFromMessage } = require("./utils/core");
 const { sendData } = require("./utils/database");
 
+// temporary import for email command, please remove this if not needed.
+const { EmbedBuilder } = require('discord.js');
+
 require("dotenv").config();
 
 // discord bot tokens
@@ -254,6 +257,37 @@ client.on('messageCreate', async (message) => {
 							status_time: statusTime,
 							status_by: statusBy,
 						}, config.datasheet_bug);
+					}
+
+					// functions for email command (temporary command)
+					if (message.content.includes('email')) {
+						// collect tags and add close tag
+						let initialTags = [closeTag[0].id,...postTags];
+						let tags = [...new Set(initialTags)];
+
+						const emailMessage = new EmbedBuilder()
+							.setDescription('**REMINDER** ⚠️\nTo best protect you and our users, we ask that all specific questions and troubleshooting related to the mitigation is directed to `support@thirdweb.com`. \n\nWe\'re closing this thread for now, but please feel free to reach out to us via email if you have any questions or concerns.')
+							.setColor(`#f213a4`);
+
+						// send embed message saying to proceed in email
+						await message.channel.send({ 
+							embeds: [
+								emailMessage
+							]
+						});
+
+						// then archive / close it
+						message.channel.edit({
+							appliedTags: tags,
+							archived: true
+						});
+
+						// and send it
+						sendData({
+							post_id: postId,
+							first_response: statusTime,
+							responder: statusBy
+						}, config.datasheet_response);
 					}
 
 				} else {
