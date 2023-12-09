@@ -170,6 +170,7 @@ client.on('messageCreate', async (message) => {
 
 					}
 
+					// functions for the end command
 					else if (message.content.includes(config.command_end)) {
 						// collect tags and add close tag
 						let initialTags = [closeTag[0].id,...postTags];
@@ -274,12 +275,6 @@ client.on('messageCreate', async (message) => {
 							embeds: [
 								emailMessage
 							]
-						});
-
-						// then archive / close it
-						message.channel.edit({
-							appliedTags: tags,
-							archived: true
 						});
 
 						// and send it
