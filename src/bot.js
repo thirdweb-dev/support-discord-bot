@@ -6,7 +6,7 @@ const {
 	GatewayIntentBits, 
 	Partials } = require("discord.js");
 const config = require("./config.json");
-const { sendEmbedMessage, formatTime, getURLFromMessage } = require("./utils/core");
+const { sendEmbedMessage, formatTime, getURLFromMessage, serverTime } = require("./utils/core");
 const { sendData } = require("./utils/database");
 
 // temporary import for email command, please remove this if not needed.
@@ -334,7 +334,7 @@ client.on('messageCreate', async (message) => {
 							}, config.datasheet_response);
 
 							// log if the first response has been sent
-							console.log(`[log]: first response sent to database with post id of ${postId}`);
+							console.log(`[${serverTime()}][response]: first response sent to database with post id of ${postId}`);
 						}
 
 						// stop the loop
@@ -441,6 +441,9 @@ client.on('threadCreate', async post => {
 	post.send({ embeds: [
 		sendEmbedMessage(config.reminder_newpost)
 	] });
+
+	// log any new posts
+	console.log(`[${serverTime()}][new]: new post detected with post id of ${postId}`);
 });
 
 // reading events file

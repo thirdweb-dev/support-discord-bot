@@ -37,9 +37,14 @@ const getURLFromMessage = (message) => {
 	return url;
 }
 
+const serverTime = () => {
+	return moment.utc().utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
+}
+
 module.exports = {
     sendEmbedMessage,
     formatTime,
     getUsernameFromId,
-	getURLFromMessage
+	getURLFromMessage,
+	serverTime
 }
