@@ -1,4 +1,5 @@
 const fs = require("fs");
+const moment = require("moment");
 const path = require("node:path");
 const {
 	Client, 
@@ -6,7 +7,7 @@ const {
 	GatewayIntentBits, 
 	Partials } = require("discord.js");
 const config = require("./config.json");
-const { sendEmbedMessage, formatTime, getURLFromMessage, serverTime } = require("./utils/core");
+const { sendEmbedMessage, formatTime, getURLFromMessage, serverTime} = require("./utils/core");
 const { sendData } = require("./utils/database");
 
 // temporary import for email command, please remove this if not needed.
@@ -437,10 +438,19 @@ client.on('threadCreate', async post => {
 		bug_by: bugBy
 	}, config.datasheet_init);
 
-	// send message to the post
-	post.send({ embeds: [
-		sendEmbedMessage(config.reminder_newpost)
-	] });
+	// send different message on slow week (remove this if not needed in 2024)
+	if (moment().format("M/DD/YYYY") === "12/23/2023") {
+		const slowWeekMessage = new EmbedBuilder()
+			.setDescription('**Welcome to thirdweb support!** \n\nThanks for your question. Our team or community will help as soon as possible. \n\nWant an answer right away? Head to our support site and **[ASK AI](https://support.thirdweb.com)**! \n\nWe\'ve trained our AI assistant on thousands of our resources to help you get an answer in seconds.\n\n**REMINDER** 🎄\n```Wishing you a cheerful holiday season! As many of us take a break during this festive season, our responses might be a bit slower this week. If it\'s urgent, we\'re still on it. Otherwise, we appreciate your understanding during this joyful time.```')
+			.setColor(`#f213a4`);
+		post.send({ embeds: [
+			slowWeekMessage
+		] });
+	} else {
+		post.send({ embeds: [
+			sendEmbedMessage(config.reminder_newpost)
+		] });	
+	}
 
 	// log any new posts
 	console.log(`[${serverTime()}][new]: new post detected with post id of ${postId}`);
