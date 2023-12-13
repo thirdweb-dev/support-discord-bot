@@ -1,5 +1,6 @@
 const { Events, ActivityType } = require('discord.js');
 const { serverTime } = require('../utils/core');
+const packageJSON = require('../../package.json');
 
 module.exports = {
     name: Events.ClientReady,
@@ -12,6 +13,6 @@ module.exports = {
             }]
         });
 
-        console.log(`[${serverTime()}][online]: logged in as ${bot.user.tag}`);
+        console.log(`[${serverTime()}][online]: logged in as ${bot.user.tag} @ v${packageJSON.version}`);
     },
 };
