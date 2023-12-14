@@ -439,9 +439,9 @@ client.on('threadCreate', async post => {
 	}, config.datasheet_init);
 
 	// send different message on slow week (remove this if not needed in 2024)
-	if (moment().format("M/DD/YYYY") === "12/23/2023") {
+	if (moment().format("M/DD/YYYY") === "12/20/2023") {
 		const slowWeekMessage = new EmbedBuilder()
-			.setDescription('**Welcome to thirdweb support!** \n\nThanks for your question. Our team or community will help as soon as possible. \n\nWant an answer right away? Head to our support site and **[ASK AI](https://support.thirdweb.com)**! \n\nWe\'ve trained our AI assistant on thousands of our resources to help you get an answer in seconds.\n\n**REMINDER** 🎄\n```Wishing you a cheerful holiday season! As many of us take a break during this festive season, our responses might be a bit slower this week. If it\'s urgent, we\'re still on it. Otherwise, we appreciate your understanding during this joyful time.```')
+			.setDescription('**Welcome to thirdweb Support & Happy Holidays!** 🎄 \n\nFrom our team to yours, we wish you a cheerful holiday season! Many of our teammates will be unavailable during the holidays (Dec 20th to Jan 1st), so our responses may be slower until the New Year.\n\nIf you need help during this time, we suggest:\n\n📝 Refer to the [support site](https://support.thirdweb.com?utm_source=dc) and [ASK AI](https://support.thirdweb.com/getting-started/4jq21NPeMJogEK8xRErZYc/learn-about-how-the-support-ai-assistant-works/pRYXWi3efjXfDBXPe8Y4mB?utc_source=dc) for immediate answers based on thousands of our resources.\n🫂 We encourage you to help each other during this time!\n⌛ We\'ll do our best to resolve urgent matters in a timely manner.\n\nThank you all for building with us! We truly appreciate you all and can\'t wait to see what the new year has in store.\n\nCheers!\nthirdweb Team')
 			.setColor(`#f213a4`);
 		post.send({ embeds: [
 			slowWeekMessage
