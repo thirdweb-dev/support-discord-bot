@@ -438,19 +438,10 @@ client.on('threadCreate', async post => {
 		bug_by: bugBy
 	}, config.datasheet_init);
 
-	// send different message on slow week (remove this if not needed in 2024)
-	if (moment().isSameOrAfter("2023-12-20", "day")) {
-		const slowWeekMessage = new EmbedBuilder()
-			.setDescription('**Welcome to thirdweb Support & Happy Holidays!** 🎄 \n\nFrom our team to yours, we wish you a cheerful holiday season! Many of our teammates will be unavailable during the holidays (Dec 20th to Jan 1st), so our responses may be slower until the New Year.\n\nIf you need help during this time, we suggest:\n\n📝 Refer to the [support site](https://support.thirdweb.com?utm_source=dc) and [ASK AI](https://support.thirdweb.com/getting-started/4jq21NPeMJogEK8xRErZYc/learn-about-how-the-support-ai-assistant-works/pRYXWi3efjXfDBXPe8Y4mB?utc_source=dc) for immediate answers based on thousands of our resources.\n🫂 We encourage you to help each other during this time!\n⌛ We\'ll do our best to resolve urgent matters in a timely manner.\n\nThank you all for building with us! We truly appreciate you all and can\'t wait to see what the new year has in store.\n\nCheers!\nthirdweb Team')
-			.setColor(`#f213a4`);
-		post.send({ embeds: [
-			slowWeekMessage
-		] });`~~~`
-	} else {
-		post.send({ embeds: [
-			sendEmbedMessage(config.reminder_newpost)
-		] });	
-	}
+	// send message upon creating of new ticket
+	post.send({ embeds: [
+		sendEmbedMessage(config.reminder_newpost)
+	] });
 
 	// log any new posts
 	console.log(`[${serverTime()}][new]: new post detected with post id of ${postId}`);
