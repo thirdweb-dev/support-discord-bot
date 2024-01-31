@@ -91,6 +91,14 @@ client.on('messageCreate', async (message) => {
 					const statusTime = formatTime(message.createdTimestamp);
 					const statusBy = member.user.username;
 
+					const sendFirstResponse = () => {
+						sendData({
+							post_id: postId,
+							first_response: statusTime,
+							responder: statusBy
+						}, config.datasheet_response);
+					}
+
 					// functions for resolve command
 					if (message.content.includes(config.command_resolve) || message.content.includes(config.command_sc_resolve)) {
 						// collect tags and add resolve tag
@@ -121,6 +129,10 @@ client.on('messageCreate', async (message) => {
 								resolution_time: statusTime,
 								resolved_by: mention.users.first().username,
 							}, config.datasheet_resolve);
+
+							if (message.content.includes('!sf')) {
+								sendFirstResponse();
+							}
 						} else {
 							// send the data with the one who sends the command
 							sendData({
@@ -128,6 +140,10 @@ client.on('messageCreate', async (message) => {
 								resolution_time: statusTime,
 								resolved_by: statusBy,
 							}, config.datasheet_resolve);
+
+							if (message.content.includes('!sf')) {
+								sendFirstResponse();
+							}
 						}
 
 					}
@@ -160,6 +176,10 @@ client.on('messageCreate', async (message) => {
 								close_time: statusTime,
 								closed_by: mention.users.first().username,
 							}, config.datasheet_close);
+
+							if (message.content.includes('!sf')) {
+								sendFirstResponse();
+							}
 						} else {
 							// send the data with the one who sends the command
 							sendData({
@@ -167,6 +187,10 @@ client.on('messageCreate', async (message) => {
 								close_time: statusTime,
 								closed_by: statusBy,
 							}, config.datasheet_close);
+
+							if (message.content.includes('!sf')) {
+								sendFirstResponse();
+							}
 						}
 
 					}
@@ -262,11 +286,9 @@ client.on('messageCreate', async (message) => {
 					}
 
 					// functions for email command (temporary command)
-					if (message.content.includes('email')) {
-						// collect tags and add close tag
-						let initialTags = [closeTag[0].id,...postTags];
-						let tags = [...new Set(initialTags)];
+					if (message.content.includes('email') || message.content.includes('mitigation')) {
 
+						// embed message about the mitigation
 						const emailMessage = new EmbedBuilder()
 							.setDescription('**REMINDER** ⚠️\nTo best protect you and our users, we ask that all specific questions and troubleshooting related to the mitigation is directed to `support@thirdweb.com`. \n\nWe\'re closing this thread for now, but please feel free to reach out to us via email if you have any questions or concerns.')
 							.setColor(`#f213a4`);
@@ -275,6 +297,29 @@ client.on('messageCreate', async (message) => {
 						await message.channel.send({ 
 							embeds: [
 								emailMessage
+							]
+						});
+
+						// and send it
+						sendData({
+							post_id: postId,
+							first_response: statusTime,
+							responder: statusBy
+						}, config.datasheet_response);
+					}
+
+					// functions for account/billing issues command (temporary command)
+					if (message.content.includes('billing')) {
+
+						// embed message about the account/billing issues
+						const billingMessage = new EmbedBuilder()
+							.setDescription('**REMINDER** ⚠️\nThis is a public channel to best protect you, we ask that all specific questions and troubleshooting related to your account or billing please send us an email to `support@thirdweb.com`. \n\nWe\'re closing this thread for now, but please feel free to reach out to us via email if you have any questions or concerns.')
+							.setColor(`#f213a4`);
+
+						// send embed message saying to proceed in email
+						await message.channel.send({ 
+							embeds: [
+								billingMessage
 							]
 						});
 
