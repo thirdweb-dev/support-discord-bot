@@ -366,7 +366,12 @@ client.on('messageCreate', async (message) => {
 					if (member.roles.cache.hasAny(...roleIDs)) {
 						
 						// check if the current message is first message inside the thread from support role
-						if (message.id === fetchMessagesArray[i][0]) {
+						if (message.id === fetchMessagesArray[i][0] || message.content.startsWith("###fixres")) {
+
+							// if the message is a special fix command, delete it
+							if (message.content.startsWith("###fixres")) {
+								message.delete();
+							}
 
 							// capture the date and time
 							const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
