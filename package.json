@@ -11,6 +11,7 @@
   "license": "GPL-3.0",
   "private": true,
   "dependencies": {
+    "@context-labs/sdk": "^0.0.107",
     "discord.js": "^14.10.2",
     "dotenv": "^16.0.3",
     "fs-extra": "^11.1.1",

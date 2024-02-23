@@ -2,60 +2,67 @@ const fs = require("fs");
 const moment = require("moment");
 const path = require("node:path");
 const {
-	Client, 
-	ChannelType, 
-	GatewayIntentBits, 
-	Partials } = require("discord.js");
+	Client,
+	ChannelType,
+	GatewayIntentBits,
+	Partials,
+} = require("discord.js");
 const config = require("./config.json");
-const { sendEmbedMessage, formatTime, getURLFromMessage, serverTime} = require("./utils/core");
+const {
+	sendEmbedMessage,
+	formatTime,
+	getURLFromMessage,
+	serverTime,
+	CloseButtonComponent,
+	FeedbackButtonComponent,
+} = require("./utils/core");
 const { sendData } = require("./utils/database");
 
 // temporary import for email command, please remove this if not needed.
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder } = require("discord.js");
+
+// usecontext.ai imports
+const { ContextSDK, ContextSDKError } = require("@context-labs/sdk");
 
 require("dotenv").config();
 
 // discord bot tokens
-const { 
-	DISCORD_BOT_TOKEN,
-	DISCORD_SUPPORT_ROLE_ID
-} = process.env;
+const { DISCORD_BOT_TOKEN, DISCORD_SUPPORT_ROLE_ID, BOT_ID_CONTEXT } = process.env;
 
 const token = DISCORD_BOT_TOKEN;
-const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(',');
+const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
 
 // discord bot instents and partials
-const client = new Client({ 
+const client = new Client({
 	intents: [
-		GatewayIntentBits.Guilds, 
+		GatewayIntentBits.Guilds,
 		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildMessages
+		GatewayIntentBits.GuildMessages,
 	],
-	partials: [
-		Partials.Channel,
-		Partials.Message
-	]
+	partials: [Partials.Channel, Partials.Message],
 });
 
-// listen to post messages
-client.on('messageCreate', async (message) => {
-	if (message.author.bot) return;
-	
-	// check ping
-	if (message.content === 'ping') {
+//create context instance
+const context = new ContextSDK({});
 
-		message.reply({ embeds: [
-			sendEmbedMessage(`Pong: ${client.ws.ping}ms`)
-		] });
+// listen to post messages
+client.on("messageCreate", async (message) => {
+	if (message.author.bot) return;
+
+	// check ping
+	if (message.content === "ping") {
+		message.reply({
+			embeds: [sendEmbedMessage(`Pong: ${client.ws.ping}ms`)],
+		});
 		console.log(`[log]: responded to ping command in ${client.ws.ping}ms`);
 	}
 
 	// respond to user if the bot mentioned specifically not with everyone
 	if (message.mentions.has(client.user) && !message.mentions.everyone) {
 		// convert this to embed message.reply({config.mention_message);
-		message.reply({ embeds: [
-			sendEmbedMessage(config.reminder_mention)
-		] });
+		message.reply({
+			embeds: [sendEmbedMessage(config.reminder_mention)],
+		});
 	}
 
 	// get the details from user who send command
@@ -67,280 +74,328 @@ client.on('messageCreate', async (message) => {
 	const post = forum.channels.cache.get(message.channel.parent.id);
 
 	// check if the message is from the forum post
-	if (typeof post.availableTags !== 'undefined') {
+	if (typeof post.availableTags !== "undefined") {
 		// filter the tags to get the resolution tag name ID
-		const resolutionTag = post.availableTags.filter((item) => { return item.name == config.tag_name_resolve });
-		const closeTag = post.availableTags.filter((item) => { return item.name == config.tag_name_close });
-		const escalateTag = post.availableTags.filter((item) => { return item.name == config.tag_name_escalate });
-		const bugTag = post.availableTags.filter((item) => { return item.name == config.tag_name_bug });
+		const resolutionTag = post.availableTags.filter((item) => {
+			return item.name == config.tag_name_resolve;
+		});
+		const closeTag = post.availableTags.filter((item) => {
+			return item.name == config.tag_name_close;
+		});
+		const escalateTag = post.availableTags.filter((item) => {
+			return item.name == config.tag_name_escalate;
+		});
+		const bugTag = post.availableTags.filter((item) => {
+			return item.name == config.tag_name_bug;
+		});
 		// get the existing tags of the post
 		const postTags = message.channel.appliedTags;
 
 		// check if the message has the command prefix
 		if (message.content.startsWith(config.command_prefix)) {
 			await message.delete(); // delete the commmand message
-			
-			// check if the message is in the forum post and from the support role
-			if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs)) {
 
+			// check if the message is in the forum post and from the support role
+			if (
+				message.channel.type === ChannelType.PublicThread &&
+				member.roles.cache.hasAny(...roleIDs)
+			) {
 				// check if the post has fewer tags
 				if (postTags.length < 5) {
-
 					// gather data
 					const postId = message.channel.id;
 					const statusTime = formatTime(message.createdTimestamp);
 					const statusBy = member.user.username;
 
 					const sendFirstResponse = () => {
-						sendData({
-							post_id: postId,
-							first_response: statusTime,
-							responder: statusBy
-						}, config.datasheet_response);
-					}
+						sendData(
+							{
+								post_id: postId,
+								first_response: statusTime,
+								responder: statusBy,
+							},
+							config.datasheet_response
+						);
+					};
 
 					// functions for resolve command
-					if (message.content.includes(config.command_resolve) || message.content.includes(config.command_sc_resolve)) {
+					if (
+						message.content.includes(config.command_resolve) ||
+						message.content.includes(config.command_sc_resolve)
+					) {
 						// collect tags and add resolve tag
-						let initialTags = [resolutionTag[0].id,...postTags].filter((item) => { 
-							return item != escalateTag[0].id 
-						});
+						let initialTags = [resolutionTag[0].id, ...postTags].filter(
+							(item) => {
+								return item != escalateTag[0].id;
+							}
+						);
 						let tags = [...new Set(initialTags)];
 
 						// send embed message upon executing the resolve command
-						await message.channel.send({ 
-							embeds: [
-								sendEmbedMessage(`${config.reminder_resolve}`)
-							],
-							content: `🔔 <@${message.channel.ownerId}>`
+						await message.channel.send({
+							embeds: [sendEmbedMessage(`${config.reminder_resolve}`)],
+							content: `🔔 <@${message.channel.ownerId}>`,
 						});
 
 						// then archive / close it
 						message.channel.edit({
 							appliedTags: tags,
-							archived: false
+							archived: false,
 						});
 
 						// check if there's a mentioned user
 						if (mention.users.first()) {
 							// send the data, use the mentioned user as resolvedBy
-							sendData({
-								post_id: postId,
-								resolution_time: statusTime,
-								resolved_by: mention.users.first().username,
-							}, config.datasheet_resolve);
+							sendData(
+								{
+									post_id: postId,
+									resolution_time: statusTime,
+									resolved_by: mention.users.first().username,
+								},
+								config.datasheet_resolve
+							);
 
-							if (message.content.includes('!sf')) {
+							if (message.content.includes("!sf")) {
 								sendFirstResponse();
 							}
 						} else {
 							// send the data with the one who sends the command
-							sendData({
-								post_id: postId,
-								resolution_time: statusTime,
-								resolved_by: statusBy,
-							}, config.datasheet_resolve);
+							sendData(
+								{
+									post_id: postId,
+									resolution_time: statusTime,
+									resolved_by: statusBy,
+								},
+								config.datasheet_resolve
+							);
 
-							if (message.content.includes('!sf')) {
+							if (message.content.includes("!sf")) {
 								sendFirstResponse();
 							}
 						}
-
 					}
 
 					// functions for close command
-					if (message.content.includes(config.command_close) || message.content.includes(config.command_sc_close)) {
+					if (
+						message.content.includes(config.command_close) ||
+						message.content.includes(config.command_sc_close)
+					) {
 						// collect tags and add close tag
-						let initialTags = [closeTag[0].id,...postTags];
+						let initialTags = [closeTag[0].id, ...postTags];
 						let tags = [...new Set(initialTags)];
 
 						// send embed message upon executing the close command
-						await message.channel.send({ 
-							embeds: [
-								sendEmbedMessage(`${config.reminder_close}`)
-							],
-							content: `🔔 <@${message.channel.ownerId}>`
+						await message.channel.send({
+							embeds: [sendEmbedMessage(`${config.reminder_close}`)],
+							content: `🔔 <@${message.channel.ownerId}>`,
 						});
 
 						// then archive / close it
 						message.channel.edit({
 							appliedTags: tags,
-							archived: true
+							archived: true,
 						});
 
 						// check if there's a mentioned user
 						if (mention.users.first()) {
 							// send the data, use the mentioned user as resolvedBy
-							sendData({
-								post_id: postId,
-								close_time: statusTime,
-								closed_by: mention.users.first().username,
-							}, config.datasheet_close);
+							sendData(
+								{
+									post_id: postId,
+									close_time: statusTime,
+									closed_by: mention.users.first().username,
+								},
+								config.datasheet_close
+							);
 
-							if (message.content.includes('!sf')) {
+							if (message.content.includes("!sf")) {
 								sendFirstResponse();
 							}
 						} else {
 							// send the data with the one who sends the command
-							sendData({
-								post_id: postId,
-								close_time: statusTime,
-								closed_by: statusBy,
-							}, config.datasheet_close);
+							sendData(
+								{
+									post_id: postId,
+									close_time: statusTime,
+									closed_by: statusBy,
+								},
+								config.datasheet_close
+							);
 
-							if (message.content.includes('!sf')) {
+							if (message.content.includes("!sf")) {
 								sendFirstResponse();
 							}
 						}
-
 					}
 
 					// functions for the end command
 					else if (message.content.includes(config.command_end)) {
 						// collect tags and add close tag
-						let initialTags = [closeTag[0].id,...postTags];
+						let initialTags = [closeTag[0].id, ...postTags];
 						let tags = [...new Set(initialTags)];
 
 						// then archive / close it
 						message.channel.edit({
 							appliedTags: tags,
-							archived: true
+							archived: true,
 						});
 
 						// check if there's a mentioned user
 						if (mention.users.first()) {
 							// send the data, use the mentioned user as resolvedBy
-							sendData({
-								post_id: postId,
-								close_time: statusTime,
-								closed_by: mention.users.first().username,
-							}, config.datasheet_close);
+							sendData(
+								{
+									post_id: postId,
+									close_time: statusTime,
+									closed_by: mention.users.first().username,
+								},
+								config.datasheet_close
+							);
 						} else {
 							// send the data with the one who sends the command
-							sendData({
-								post_id: postId,
-								close_time: statusTime,
-								closed_by: statusBy,
-							}, config.datasheet_close);
+							sendData(
+								{
+									post_id: postId,
+									close_time: statusTime,
+									closed_by: statusBy,
+								},
+								config.datasheet_close
+							);
 						}
 					}
 
 					// functions for escalation command
-					if (message.content.includes(config.command_escalate) || message.content.includes(config.command_sc_escalate) && getURLFromMessage(message.content) && getURLFromMessage(message.content).length) {
+					if (
+						message.content.includes(config.command_escalate) ||
+						(message.content.includes(config.command_sc_escalate) &&
+							getURLFromMessage(message.content) &&
+							getURLFromMessage(message.content).length)
+					) {
 						// collect tags and add escalation tag
-						let initialTags = [escalateTag[0].id,...postTags];
+						let initialTags = [escalateTag[0].id, ...postTags];
 						let tags = [...new Set(initialTags)];
 						const escalationLink = getURLFromMessage(message.content);
 
 						// send embed message upon executing the escalate command
 						await message.channel.send({
-							embeds: [
-								sendEmbedMessage(`${config.reminder_escalate}`)
-							],
-							content: `🔔 <@${message.channel.ownerId}>`
+							embeds: [sendEmbedMessage(`${config.reminder_escalate}`)],
+							content: `🔔 <@${message.channel.ownerId}>`,
 						});
 
 						// then update the tags
 						message.channel.edit({
-							appliedTags: tags
+							appliedTags: tags,
 						});
 
 						// check if there's a mentioned user
 						if (mention.users.first()) {
 							// send the data, use the mentioned user as resolvedBy
-							sendData({
-								post_id: postId,
-								escalation_time: statusTime,
-								escalated_by: mention.users.first().username,
-								escalation_link: escalationLink[0],
-							}, config.datasheet_escalate);
+							sendData(
+								{
+									post_id: postId,
+									escalation_time: statusTime,
+									escalated_by: mention.users.first().username,
+									escalation_link: escalationLink[0],
+								},
+								config.datasheet_escalate
+							);
 						} else {
 							// send the data with the one who sends the command
-							sendData({
-								post_id: postId,
-								escalation_time: statusTime,
-								escalated_by: statusBy,
-								escalation_link: escalationLink[0],
-							}, config.datasheet_escalate);
+							sendData(
+								{
+									post_id: postId,
+									escalation_time: statusTime,
+									escalated_by: statusBy,
+									escalation_link: escalationLink[0],
+								},
+								config.datasheet_escalate
+							);
 						}
-
 					}
 
 					// functions for bug command
 					if (message.content.includes(config.command_bug)) {
 						// collect tags and add bug tag
-						let initialTags = [bugTag[0].id,...postTags];
+						let initialTags = [bugTag[0].id, ...postTags];
 						let tags = [...new Set(initialTags)];
 
 						// then update the tags
 						message.channel.edit({
-							appliedTags: tags
+							appliedTags: tags,
 						});
 
 						// send the data with the one who sends the command
-						sendData({
-							post_id: postId,
-							status_time: statusTime,
-							status_by: statusBy,
-						}, config.datasheet_bug);
+						sendData(
+							{
+								post_id: postId,
+								status_time: statusTime,
+								status_by: statusBy,
+							},
+							config.datasheet_bug
+						);
 					}
 
 					// functions for email command (temporary command)
-					if (message.content.includes('email') || message.content.includes('mitigation')) {
-
+					if (
+						message.content.includes("email") ||
+						message.content.includes("mitigation")
+					) {
 						// embed message about the mitigation
 						const emailMessage = new EmbedBuilder()
-							.setDescription('**REMINDER** ⚠️\nTo best protect you and our users, we ask that all specific questions and troubleshooting related to the mitigation is directed to `support@thirdweb.com`. \n\nWe\'re closing this thread for now, but please feel free to reach out to us via email if you have any questions or concerns.')
+							.setDescription(
+								"**REMINDER** ⚠️\nTo best protect you and our users, we ask that all specific questions and troubleshooting related to the mitigation is directed to `support@thirdweb.com`. \n\nWe're closing this thread for now, but please feel free to reach out to us via email if you have any questions or concerns."
+							)
 							.setColor(`#f213a4`);
 
 						// send embed message saying to proceed in email
-						await message.channel.send({ 
-							embeds: [
-								emailMessage
-							]
+						await message.channel.send({
+							embeds: [emailMessage],
 						});
 
 						// and send it
-						sendData({
-							post_id: postId,
-							first_response: statusTime,
-							responder: statusBy
-						}, config.datasheet_response);
+						sendData(
+							{
+								post_id: postId,
+								first_response: statusTime,
+								responder: statusBy,
+							},
+							config.datasheet_response
+						);
 					}
 
 					// functions for account/billing issues command (temporary command)
-					if (message.content.includes('billing')) {
-
+					if (message.content.includes("billing")) {
 						// embed message about the account/billing issues
 						const billingMessage = new EmbedBuilder()
-							.setDescription('**REMINDER** ⚠️\nThis is a public channel to best protect you, we ask that all specific questions and troubleshooting related to your account or billing please send us an email to `support@thirdweb.com`. \n\nWe\'re closing this thread for now, but please feel free to reach out to us via email if you have any questions or concerns.')
+							.setDescription(
+								"**REMINDER** ⚠️\nThis is a public channel to best protect you, we ask that all specific questions and troubleshooting related to your account or billing please send us an email to `support@thirdweb.com`. \n\nWe're closing this thread for now, but please feel free to reach out to us via email if you have any questions or concerns."
+							)
 							.setColor(`#f213a4`);
 
 						// send embed message saying to proceed in email
-						await message.channel.send({ 
-							embeds: [
-								billingMessage
-							]
+						await message.channel.send({
+							embeds: [billingMessage],
 						});
 
 						// and send it
-						sendData({
-							post_id: postId,
-							first_response: statusTime,
-							responder: statusBy
-						}, config.datasheet_response);
+						sendData(
+							{
+								post_id: postId,
+								first_response: statusTime,
+								responder: statusBy,
+							},
+							config.datasheet_response
+						);
 					}
-
 				} else {
-					message.channel.send({
-						embeds: [
-							sendEmbedMessage(`${config.reminder_max_tags}`)
-						],
-						content: `🔔 <@${message.author.id}>`
-					})
-					.then(message => {
-						setTimeout(() => message.delete(), 10000) // delete message after 15s
-					});
+					message.channel
+						.send({
+							embeds: [sendEmbedMessage(`${config.reminder_max_tags}`)],
+							content: `🔔 <@${message.author.id}>`,
+						})
+						.then((message) => {
+							setTimeout(() => message.delete(), 10000); // delete message after 15s
+						});
 				}
 			}
 		}
@@ -349,43 +404,50 @@ client.on('messageCreate', async (message) => {
 		 * Logic to capture the first response from the forum post
 		 */
 		// check the the message if it is in the thread and from the support role
-		if (message.channel.type === ChannelType.PublicThread && member.roles.cache.hasAny(...roleIDs) && !message.content.startsWith(config.command_prefix)) {
+		if (
+			message.channel.type === ChannelType.PublicThread &&
+			member.roles.cache.hasAny(...roleIDs) &&
+			!message.content.startsWith(config.command_prefix)
+		) {
 			// get details about the thread and the message
 			const postId = message.channel.id;
-			const fetchMessages = await message.channel.messages.fetch({ after: postId });
+			const fetchMessages = await message.channel.messages.fetch({
+				after: postId,
+			});
 			const fetchMessagesArray = Array.from(fetchMessages); // convert the fetch data to array
 			// check if the fetch message array is empty
 			if (fetchMessagesArray.length) {
 				// check the messages for the first messages from the support role
 				for (let i = fetchMessagesArray.length - 1; i < i >= 0; i--) {
-
 					// get the member details from the author id in the data from the messages
-					const member = await message.guild.members.fetch(fetchMessagesArray[i][1].author.id);
+					const member = await message.guild.members.fetch(
+						fetchMessagesArray[i][1].author.id
+					);
 
 					// check each messages for mod message, then break it if found the first message from support role
 					if (member.roles.cache.hasAny(...roleIDs)) {
-						
 						// check if the current message is first message inside the thread from support role
-						if (message.id === fetchMessagesArray[i][0] || message.content.startsWith("###fixres")) {
-
-							// if the message is a special fix command, delete it
-							if (message.content.startsWith("###fixres")) {
-								message.delete();
-							}
-
+						if (message.id === fetchMessagesArray[i][0]) {
 							// capture the date and time
-							const firstResponse = formatTime(fetchMessagesArray[i][1].createdTimestamp);
+							const firstResponse = formatTime(
+								fetchMessagesArray[i][1].createdTimestamp
+							);
 							const firstResponder = fetchMessagesArray[i][1].author.username;
 
 							// and send it
-							sendData({
-								post_id: postId,
-								first_response: firstResponse,
-								responder: firstResponder
-							}, config.datasheet_response);
+							sendData(
+								{
+									post_id: postId,
+									first_response: firstResponse,
+									responder: firstResponder,
+								},
+								config.datasheet_response
+							);
 
 							// log if the first response has been sent
-							console.log(`[${serverTime()}][response]: first response sent to database with post id of ${postId}`);
+							console.log(
+								`[${serverTime()}][response]: first response sent to database with post id of ${postId}`
+							);
 						}
 
 						// stop the loop
@@ -396,8 +458,8 @@ client.on('messageCreate', async (message) => {
 
 			// track the URLs being sent in the threads
 			const redirectData = config.redirect_tracking;
-			const redirectUrls = config.redirect_tracking.map(data => data.url);
-			if (redirectUrls.some(url => message.content.includes(url))) {
+			const redirectUrls = config.redirect_tracking.map((data) => data.url);
+			if (redirectUrls.some((url) => message.content.includes(url))) {
 				// capture and prepare the data
 				const urls = await getURLFromMessage(message.content);
 				const postId = message.channel.id;
@@ -405,34 +467,32 @@ client.on('messageCreate', async (message) => {
 				const redirectBy = message.author.username;
 				const sendUrls = [];
 
-				urls.map(url => {
+				urls.map((url) => {
 					// extract the URL only
 					const urlOnly = new URL(url).hostname;
-					redirectData.map(data => {
+					redirectData.map((data) => {
 						// get the name of URL for categorization
-						if(urlOnly == data.url) {
+						if (urlOnly == data.url) {
 							sendUrls.push({
 								post_id: postId,
 								redirect_time: redirectTime,
 								redirect_by: redirectBy,
 								redirect_url: url,
-								redirect_name: data.name
+								redirect_name: data.name,
 							});
 						}
-					})
+					});
 				});
 
 				// send data in batch in rows
 				sendData(sendUrls, config.datasheet_redirect);
 			}
-
 		}
 	}
 });
 
 // listen to new forum posts
-client.on('threadCreate', async post => {
-
+client.on("threadCreate", async (post) => {
 	// get the forum details, from posts to tags
 	const forumChannel = client.guilds.cache.get(post.guildId);
 	const forumPost = forumChannel.channels.cache.get(post.parentId);
@@ -454,7 +514,7 @@ client.on('threadCreate', async post => {
 	const question = post.name;
 	const postedBy = (await client.users.fetch(post.ownerId)).username;
 	const posted = formatTime(messageTimestamp);
-	const tags = forumTags.join(', ');
+	const tags = forumTags.join(", ");
 	const firstResponse = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_response}!A2:B,2,0))`;
 	const resolutionTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_resolve}!A2:B,2,0))`;
 	const closeTime = `=IFERROR(VLOOKUP(A2:A,${config.datasheet_close}!A2:B,2,0))`;
@@ -468,38 +528,146 @@ client.on('threadCreate', async post => {
 	const bugBy = `=IFERROR(VLOOKUP(A2:A,{${config.datasheet_bug}!A2:A,${config.datasheet_bug}!C2:C},2,0))`;
 
 	// send the data
-	sendData({
-		post_id: postId,
-		post_link: postLink,
-		question: question,
-		posted_by: postedBy,
-		posted: posted,
-		tags: tags,
-		responder: responder,
-		first_response: firstResponse,
-		resolution_time: resolutionTime,
-		resolved_by: resolvedBy,
-		close_time: closeTime,
-		closed_by: closedBy,
-		escalation_time: escalationTime,
-		escalated_by: escalatedBy,
-		escalation_link: escalationLink,
-		bug_time: bugTime,
-		bug_by: bugBy
-	}, config.datasheet_init);
+	sendData(
+		{
+			post_id: postId,
+			post_link: postLink,
+			question: question,
+			posted_by: postedBy,
+			posted: posted,
+			tags: tags,
+			responder: responder,
+			first_response: firstResponse,
+			resolution_time: resolutionTime,
+			resolved_by: resolvedBy,
+			close_time: closeTime,
+			closed_by: closedBy,
+			escalation_time: escalationTime,
+			escalated_by: escalatedBy,
+			escalation_link: escalationLink,
+			bug_time: bugTime,
+			bug_by: bugBy,
+		},
+		config.datasheet_init
+	);
 
 	// send message upon creating of new ticket
-	post.send({ embeds: [
-		sendEmbedMessage(config.reminder_newpost)
-	] });
+	post.send({
+		embeds: [sendEmbedMessage(config.reminder_newpost)],
+		components: [CloseButtonComponent()],
+	});
 
 	// log any new posts
-	console.log(`[${serverTime()}][new]: new post detected with post id of ${postId}`);
+	console.log(
+		`[${serverTime()}][new]: new post detected with post id of ${postId}`
+	);
+	// try to generate an ai response for the post
+	let aiMessageLoading = await post.send({
+		embeds: [
+			sendEmbedMessage("**AI RESPONSE:** " + `<a:load:1209213672275189841>`),
+		],
+	});
+
+	await context.query({
+		botId: BOT_ID_cONTEXT,
+		query: question,
+		onComplete: async (query) => {
+			await post.messages.fetch(aiMessageLoading.id).then((msg) =>
+				msg.edit({
+					content: "",
+					embeds: [
+						sendEmbedMessage("**AI RESPONSE:** " + query.output.toString()),
+					],
+					components: [FeedbackButtonComponent()],
+				})
+			);
+			sendData(
+				{
+					ai_response: query.output.toString(),
+				},
+				config.datasheet_init
+			);
+		},
+	});
+});
+
+//listen to button clicks
+client.on("interactionCreate", async (interaction) => {
+	if (interaction.isButton()) {
+		const forum = client.guilds.cache.get(interaction.guild.id);
+		const post = forum.channels.cache.get(interaction.channel.parent.id);
+		const postedBy = (await client.users.fetch(interaction.channel.ownerId))
+			.username;
+		const postTags = interaction.channel.appliedTags;
+		const statusTime = formatTime(interaction.createdTimestamp);
+		const closeTag = post.availableTags.filter((item) => {
+			return item.name == config.tag_name_close;
+		});
+		let initialTags = [closeTag[0].id, ...postTags];
+		let tags = [...new Set(initialTags)];
+		const question = post.name;
+		if (interaction.channel.ownerId != interaction.user.id) return;
+		if (interaction.customId === "close") {
+			// send embed message upon executing the close command
+			await interaction.channel.send({
+				embeds: [sendEmbedMessage(`${config.reminder_close}`)],
+				content: `🔔 <@${interaction.channel.ownerId}>`,
+			});
+			await interaction.message.edit({ components: [] });
+			// then archive / close it
+			interaction.channel.edit({
+				appliedTags: tags,
+				archived: true,
+			});
+
+			sendData(
+				{
+					post_id: post.id,
+					close_time: statusTime,
+					closed_by: postedBy,
+				},
+				config.datasheet_close
+			);
+		} else if (interaction.customId === "helpful") {
+			sendData(
+				{
+					post_id: post.id,
+					question: question,
+					ai_response_helpful: true,
+				},
+				config.datasheet_aifeedback
+			);
+
+			await interaction.reply({
+				embeds: [sendEmbedMessage(`Thank you so much for your feedback!`)],
+				content: `🔔 <@${interaction.channel.ownerId}>`,
+				ephemeral: true,
+			});
+			await interaction.message.edit({ components: [] });
+		} else if (interaction.customId === "not-helpful") {
+			sendData(
+				{
+					post_id: post.id,
+					question: question,
+					ai_response_helpful: false,
+				},
+				config.datasheet_aifeedback
+			);
+			await interaction.reply({
+				embeds: [sendEmbedMessage(`Thank you so much for your feedback!`)],
+				content: `🔔 <@${interaction.channel.ownerId}>`,
+				ephemeral: true,
+			});
+			await interaction.message.edit({ components: [] });
+		}
+	}
 });
 
 // reading events file
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+const eventsPath = path.join(__dirname, "events");
+const eventFiles = fs
+	.readdirSync(eventsPath)
+	.filter((file) => file.endsWith(".js"));
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);

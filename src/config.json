@@ -21,6 +21,7 @@
     "datasheet_reopen": "reopen",
     "datasheet_bug": "bug",
     "datasheet_redirect": "redirect",
+    "datasheet_aifeedback": "aifeedback",
     "utc_offset": -8,
     "reminder_newpost": "**Thanks for reaching out!** \n\nThis support channel is where you can get help from like-minded developers in the community.\n\nWant to get in touch with the thirdweb customer success team?\n\nReach out on our official support platform and create a ticket: https://thirdweb.com/support",
     "reminder_mention": "Hey there! If you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Alternatively, you can post your questions in <#1029543258822553680> and receive support from our helpful community members. Thank you for choosing to build with us!",
