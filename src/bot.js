@@ -564,7 +564,7 @@ client.on("threadCreate", async (post) => {
 	// try to generate an ai response for the post
 	let aiMessageLoading = await post.send({
 		embeds: [
-			sendEmbedMessage("**AI RESPONSE:** " + `<a:load:1209213672275189841>`),
+			sendEmbedMessage("**AI RESPONSE:** " + `<a:load:1210497921158619136>`),
 		],
 	});
 
