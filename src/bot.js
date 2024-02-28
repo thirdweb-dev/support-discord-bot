@@ -22,12 +22,12 @@ const { sendData } = require("./utils/database");
 const { EmbedBuilder } = require("discord.js");
 
 // usecontext.ai imports
-const { ContextSDK, ContextSDKError } = require("@context-labs/sdk");
+const { ContextSDK } = require("@context-labs/sdk");
 
 require("dotenv").config();
 
 // discord bot tokens
-const { DISCORD_BOT_TOKEN, DISCORD_SUPPORT_ROLE_ID, BOT_ID_CONTEXT } = process.env;
+const { DISCORD_BOT_TOKEN, DISCORD_SUPPORT_ROLE_ID, BOT_ID_CONTEXT, AI_TEXT_CHANNEL } = process.env;
 
 const token = DISCORD_BOT_TOKEN;
 const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
@@ -56,7 +56,34 @@ client.on("messageCreate", async (message) => {
 		});
 		console.log(`[log]: responded to ping command in ${client.ws.ping}ms`);
 	}
+	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai')) {
+		let question = message.content.slice(6)
+		let aiMessageLoading = await message.channel.send({
+			embeds: [
+				sendEmbedMessage("**AI RESPONSE:** " + `<a:load:1210497921158619136>`),
+			],
+		});
+		await context.query({
+			botId: BOT_ID_CONTEXT,
+			query: question,
+			onComplete: async (query) => {
+				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
+					msg.edit({
+						content: "",
+						embeds: [
+							sendEmbedMessage("**AI RESPONSE:** " + query.output.toString()),
+						],
 
+					})
+				);
+
+			},
+			onError: (error) => {
+				console.error(error);
+			},
+		});
+
+	}
 	// respond to user if the bot mentioned specifically not with everyone
 	if (message.mentions.has(client.user) && !message.mentions.everyone) {
 		// convert this to embed message.reply({config.mention_message);
@@ -569,7 +596,7 @@ client.on("threadCreate", async (post) => {
 	});
 
 	await context.query({
-		botId: BOT_ID_cONTEXT,
+		botId: BOT_ID_CONTEXT,
 		query: question,
 		onComplete: async (query) => {
 			await post.messages.fetch(aiMessageLoading.id).then((msg) =>
@@ -581,12 +608,10 @@ client.on("threadCreate", async (post) => {
 					components: [FeedbackButtonComponent()],
 				})
 			);
-			sendData(
-				{
-					ai_response: query.output.toString(),
-				},
-				config.datasheet_init
-			);
+			
+		},
+		onError: (error) => {
+			console.error(error);
 		},
 	});
 });
@@ -629,6 +654,7 @@ client.on("interactionCreate", async (interaction) => {
 				config.datasheet_close
 			);
 		} else if (interaction.customId === "helpful") {
+			console.log(question)
 			sendData(
 				{
 					post_id: post.id,
