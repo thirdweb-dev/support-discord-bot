@@ -49,7 +49,7 @@ const sendData = async (data, datasheet) => {
 	if (datasheet === config.datasheet_bug) {
 		await sheet.addRow(data);
 	};
-	if (datasheet === config.datasheet_aifeedback) {
+	if (datasheet === config.datasheet_feedback) {
 		await sheet.addRow(data);
 	};
 
