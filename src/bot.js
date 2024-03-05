@@ -20,9 +20,7 @@ const { sendData } = require("./utils/database");
 
 // temporary import for email command, please remove this if not needed.
 const { EmbedBuilder } = require("discord.js");
-
-// usecontext.ai imports
-const { ContextSDK } = require("@context-labs/sdk");
+const axios = require("axios")
 
 require("dotenv").config();
 
@@ -42,8 +40,6 @@ const client = new Client({
 	partials: [Partials.Channel, Partials.Message],
 });
 
-//create context instance
-const context = new ContextSDK({});
 
 // listen to post messages
 client.on("messageCreate", async (message) => {
@@ -63,26 +59,19 @@ client.on("messageCreate", async (message) => {
 				sendEmbedMessage("**RESPONSE:** " + `<a:load:1210497921158619136>`),
 			],
 		});
-		await context.query({
+		const resp = await axios.post("https://portal.usecontext.io/api/create-generation", {
 			botId: BOT_ID_CONTEXT,
-			query: question,
-			onComplete: async (query) => {
-				console.log(query.output.toString())
-				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
-					msg.edit({
-						content: `<@${message.author.id}>`,
-						embeds: [
-							sendEmbedMessage("**RESPONSE:** " + query.output.toString()),
-						],
+			query: question
+		})
+		await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
+			msg.edit({
+				content: `<@${message.author.id}>`,
+				embeds: [
+					sendEmbedMessage("**RESPONSE:** " + resp.data.query.output.toString()),
+				],
 
-					})
-				);
-
-			},
-			onError: (error) => {
-				console.error(error);
-			},
-		});
+			})
+		);
 
 	}
 	// respond to user if the bot mentioned specifically not with everyone
@@ -596,26 +585,19 @@ client.on("threadCreate", async (post) => {
 		],
 	});
 
-	await context.query({
+	const response = await axios.post("https://portal.usecontext.io/api/create-generation", {
 		botId: BOT_ID_CONTEXT,
-		query: question,
-		onComplete: async (query) => {
-			
-			await post.messages.fetch(aiMessageLoading.id).then((msg) =>
-				msg.edit({
-					content: "",
-					embeds: [
-						sendEmbedMessage("**RESPONSE:** " + query.output.toString()),
-					],
-					components: [FeedbackButtonComponent()],
-				})
-			);
-			
-		},
-		onError: (error) => {
-			console.error(error);
-		},
-	});
+		query: question
+	})
+	await post.messages.fetch(aiMessageLoading.id).then((msg) =>
+		msg.edit({
+			content: "",
+			embeds: [
+				sendEmbedMessage("**AI RESPONSE:** " + response.data.query.output),
+			],
+			components: [FeedbackButtonComponent()],
+		})
+	);
 });
 
 //listen to button clicks
