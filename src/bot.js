@@ -660,10 +660,9 @@ client.on("interactionCreate", async (interaction) => {
 			sendData(
 				{
 					post_id: post.id,
-					question: question,
 					ai_response_helpful: true,
 				},
-				config.datasheet_aifeedback
+				config.datasheet_feedback
 			);
 
 			await interaction.reply({
@@ -676,10 +675,9 @@ client.on("interactionCreate", async (interaction) => {
 			sendData(
 				{
 					post_id: post.id,
-					question: question,
 					ai_response_helpful: false,
 				},
-				config.datasheet_aifeedback
+				config.datasheet_feedback
 			);
 			await interaction.reply({
 				embeds: [sendEmbedMessage(`Thank you so much for your feedback!`)],
