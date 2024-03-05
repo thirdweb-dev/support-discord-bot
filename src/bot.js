@@ -70,7 +70,7 @@ client.on("messageCreate", async (message) => {
 				console.log(query.output.toString())
 				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
 					msg.edit({
-						content: "",
+						content: `<@${message.author.id}>`,
 						embeds: [
 							sendEmbedMessage("**RESPONSE:** " + query.output.toString()),
 						],
