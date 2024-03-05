@@ -660,7 +660,7 @@ client.on("interactionCreate", async (interaction) => {
 			sendData(
 				{
 					post_id: post.id,
-					ai_response_helpful: true,
+					feedback: true,
 				},
 				config.datasheet_feedback
 			);
@@ -675,7 +675,7 @@ client.on("interactionCreate", async (interaction) => {
 			sendData(
 				{
 					post_id: post.id,
-					ai_response_helpful: false,
+					feedback: false,
 				},
 				config.datasheet_feedback
 			);
