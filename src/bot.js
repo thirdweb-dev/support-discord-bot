@@ -56,8 +56,8 @@ client.on("messageCreate", async (message) => {
 		});
 		console.log(`[log]: responded to ping command in ${client.ws.ping}ms`);
 	}
-	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai')) {
-		let question = message.content.slice(6)
+	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai') || message.content.startsWith('!ask')) {
+		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4)
 		let aiMessageLoading = await message.channel.send({
 			embeds: [
 				sendEmbedMessage("**RESPONSE:** " + `<a:load:1210497921158619136>`),
