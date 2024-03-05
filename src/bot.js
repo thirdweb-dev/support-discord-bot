@@ -60,18 +60,19 @@ client.on("messageCreate", async (message) => {
 		let question = message.content.slice(6)
 		let aiMessageLoading = await message.channel.send({
 			embeds: [
-				sendEmbedMessage("**AI RESPONSE:** " + `<a:load:1210497921158619136>`),
+				sendEmbedMessage("**RESPONSE:** " + `<a:load:1210497921158619136>`),
 			],
 		});
 		await context.query({
 			botId: BOT_ID_CONTEXT,
 			query: question,
 			onComplete: async (query) => {
+				console.log(query.output.toString())
 				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
 					msg.edit({
 						content: "",
 						embeds: [
-							sendEmbedMessage("**AI RESPONSE:** " + query.output.toString()),
+							sendEmbedMessage("**RESPONSE:** " + query.output.toString()),
 						],
 
 					})
@@ -591,7 +592,7 @@ client.on("threadCreate", async (post) => {
 	// try to generate an ai response for the post
 	let aiMessageLoading = await post.send({
 		embeds: [
-			sendEmbedMessage("**AI RESPONSE:** " + `<a:load:1210497921158619136>`),
+			sendEmbedMessage("**RESPONSE:** " + `<a:load:1210497921158619136>`),
 		],
 	});
 
@@ -599,11 +600,12 @@ client.on("threadCreate", async (post) => {
 		botId: BOT_ID_CONTEXT,
 		query: question,
 		onComplete: async (query) => {
+			
 			await post.messages.fetch(aiMessageLoading.id).then((msg) =>
 				msg.edit({
 					content: "",
 					embeds: [
-						sendEmbedMessage("**AI RESPONSE:** " + query.output.toString()),
+						sendEmbedMessage("**RESPONSE:** " + query.output.toString()),
 					],
 					components: [FeedbackButtonComponent()],
 				})
