@@ -24,6 +24,9 @@ const { EmbedBuilder } = require("discord.js");
 // usecontext.ai imports
 const { ContextSDK } = require("@context-labs/sdk");
 
+// package.json
+const { version } = require("../package.json");
+
 require("dotenv").config();
 
 // discord bot tokens
@@ -50,11 +53,18 @@ client.on("messageCreate", async (message) => {
 	if (message.author.bot) return;
 
 	// check ping
-	if (message.content === "ping") {
+	if (message.content === "!!ping") {
 		message.reply({
 			embeds: [sendEmbedMessage(`Pong: ${client.ws.ping}ms`)],
 		});
 		console.log(`[log]: responded to ping command in ${client.ws.ping}ms`);
+	}
+	// check version
+	if (message.content === "!!version") {
+		message.reply({
+			embeds: [sendEmbedMessage(`Version: ${version}`)],
+		});
+		console.log(`[log]: responded to version command in version ${version}`);
 	}
 	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai') || message.content.startsWith('!ask')) {
 		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4)
