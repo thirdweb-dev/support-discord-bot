@@ -659,7 +659,7 @@ client.on("interactionCreate", async (interaction) => {
 
 			sendData(
 				{
-					post_id: post.id,
+					post_id: interaction.channel.id,
 					close_time: statusTime,
 					closed_by: postedBy,
 				},
@@ -669,7 +669,7 @@ client.on("interactionCreate", async (interaction) => {
 			// console.log(question)
 			sendData(
 				{
-					post_id: post.id,
+					post_id: interaction.channel.id,
 					feedback: true,
 				},
 				config.datasheet_feedback
