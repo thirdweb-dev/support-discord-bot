@@ -67,7 +67,7 @@ client.on("messageCreate", async (message) => {
 			botId: BOT_ID_CONTEXT,
 			query: question,
 			onComplete: async (query) => {
-				console.log(query.output.toString())
+				// console.log(query.output.toString())
 				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
 					msg.edit({
 						content: `<@${message.author.id}>`,
@@ -656,7 +656,7 @@ client.on("interactionCreate", async (interaction) => {
 				config.datasheet_close
 			);
 		} else if (interaction.customId === "helpful") {
-			console.log(question)
+			// console.log(question)
 			sendData(
 				{
 					post_id: post.id,
