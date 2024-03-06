@@ -49,6 +49,9 @@ const sendData = async (data, datasheet) => {
 	if (datasheet === config.datasheet_bug) {
 		await sheet.addRow(data);
 	};
+	if (datasheet === config.datasheet_feedback) {
+		await sheet.addRow(data);
+	};
 
 	// check if the data will be send to redirect sheet
 	if (datasheet === config.datasheet_redirect) {
@@ -58,5 +61,5 @@ const sendData = async (data, datasheet) => {
 }
 
 module.exports = {
-    sendData
+	sendData
 }

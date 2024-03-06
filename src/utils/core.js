@@ -1,4 +1,5 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+
 const moment = require('moment');
 const config = require('../config.json');
 
@@ -9,8 +10,55 @@ const config = require('../config.json');
  */
 const sendEmbedMessage = (message) => {
 	return new EmbedBuilder()
-	.setDescription(message)
-	.setColor(`#f213a4`);
+		.setDescription(message)
+		.setColor(`#f213a4`)
+		.setTimestamp()
+		.setFooter({ text: 'thirdweb', iconURL: 'https://ipfs.io/ipfs/QmTWMy6Dw1PDyMxHxNcmDmPE8zqFCQMfD6m2feHVY89zgu/Icon/Favicon-01.png' });
+
+}
+/**
+ * close buttons
+ * @param {string} message 
+ * @returns pre-defined embed style
+ */
+const CloseButtonComponent = () => {
+	const close = new ButtonBuilder()
+		.setCustomId('close')
+		.setLabel('Close')
+		.setEmoji('⚒️')
+		.setStyle(ButtonStyle.Danger);
+		
+	const support = new ButtonBuilder()
+		.setLabel('Submit a Ticket')
+		.setEmoji('💬')
+		.setURL('https://thirdweb.com/support')
+		.setStyle(ButtonStyle.Link);
+
+	const row = new ActionRowBuilder()
+		.addComponents(close, support);
+	return row
+}
+
+/**
+ * feedback buttons
+ * @param {string} message 
+ * @returns pre-defined embed style
+ */
+const FeedbackButtonComponent = () => {
+	const helpful = new ButtonBuilder()
+		.setCustomId('helpful')
+		.setLabel('Helpful')
+		.setEmoji('😊')
+		.setStyle(ButtonStyle.Secondary);
+	const Nothelpful = new ButtonBuilder()
+		.setCustomId('not-helpful')
+		.setLabel('Not Helpful')
+		.setEmoji('😔')
+		.setStyle(ButtonStyle.Danger);
+
+	const row = new ActionRowBuilder()
+		.addComponents(helpful, Nothelpful);
+	return row
 }
 
 /**
@@ -42,9 +90,12 @@ const serverTime = () => {
 }
 
 module.exports = {
-    sendEmbedMessage,
-    formatTime,
-    getUsernameFromId,
+	sendEmbedMessage,
+	CloseButtonComponent,
+	FeedbackButtonComponent,
+	formatTime,
+	getUsernameFromId,
 	getURLFromMessage,
-	serverTime
+	serverTime,
+
 }

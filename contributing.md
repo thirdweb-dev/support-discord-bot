@@ -1,4 +1,4 @@
-# 🎯 Contributing to Thread-based Support Bot (thirdweb support)
+# 🎯 Contributing to Support Bot (thirdweb support)
 
 Any contributions are welcome, encouraged, and valued. See the following information below for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for me as maintainer and smooth out the experience for all involved. The community looks forward to your contributions. 🎉✌✨
 
