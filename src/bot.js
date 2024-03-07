@@ -30,7 +30,11 @@ const { version } = require("../package.json");
 require("dotenv").config();
 
 // discord bot tokens
-const { DISCORD_BOT_TOKEN, DISCORD_SUPPORT_ROLE_ID, BOT_ID_CONTEXT, AI_TEXT_CHANNEL } = process.env;
+const { 
+	DISCORD_BOT_TOKEN, 
+	DISCORD_SUPPORT_ROLE_ID, 
+	CONTEXT_ID, 
+	ASKAI_CHANNEL } = process.env;
 
 const token = DISCORD_BOT_TOKEN;
 const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
@@ -66,7 +70,7 @@ client.on("messageCreate", async (message) => {
 		});
 		console.log(`[log]: responded to version command in version ${version}`);
 	}
-	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai') || message.channel.id === AI_TEXT_CHANNEL &&  message.content.startsWith('!ask')) {
+	if (message.channel.id === ASKAI_CHANNEL && message.content.startsWith('!askai') || message.channel.id === ASKAI_CHANNEL &&  message.content.startsWith('!ask')) {
 		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4)
 		let aiMessageLoading = await message.channel.send({
 			embeds: [
@@ -74,7 +78,7 @@ client.on("messageCreate", async (message) => {
 			],
 		});
 		await context.query({
-			botId: BOT_ID_CONTEXT,
+			botId: CONTEXT_ID,
 			query: question,
 			onComplete: async (query) => {
 				// console.log(query.output.toString())
@@ -607,7 +611,7 @@ client.on("threadCreate", async (post) => {
 	});
 
 	await context.query({
-		botId: BOT_ID_CONTEXT,
+		botId: CONTEXT_ID,
 		query: question,
 		onComplete: async (query) => {
 			
