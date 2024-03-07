@@ -74,7 +74,7 @@ client.on("messageCreate", async (message) => {
 		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4)
 		let aiMessageLoading = await message.channel.send({
 			embeds: [
-				sendEmbedMessage("**RESPONSE:** " + `<a:load:1210497921158619136>`),
+				sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
 			],
 		});
 		await context.query({
@@ -84,9 +84,9 @@ client.on("messageCreate", async (message) => {
 				// console.log(query.output.toString())
 				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
 					msg.edit({
-						content: `<@${message.author.id}>`,
+						content: `Hey <@${message.author.id}> 👇`,
 						embeds: [
-							sendEmbedMessage("**RESPONSE:** " + query.output.toString()),
+							sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
 						],
 
 					})

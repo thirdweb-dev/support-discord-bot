@@ -12,6 +12,9 @@ const sendEmbedMessage = (message) => {
 	return new EmbedBuilder()
 		.setDescription(message)
 		.setColor(`#f213a4`)
+		.addFields(
+			{ name: 'Need Help?', value: 'Submit a ticket here: https://thirdweb.com/support', inline: false}
+		)
 		.setTimestamp()
 		.setFooter({ text: 'thirdweb', iconURL: 'https://ipfs.io/ipfs/QmTWMy6Dw1PDyMxHxNcmDmPE8zqFCQMfD6m2feHVY89zgu/Icon/Favicon-01.png' });
 
