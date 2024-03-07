@@ -30,7 +30,11 @@ const { version } = require("../package.json");
 require("dotenv").config();
 
 // discord bot tokens
-const { DISCORD_BOT_TOKEN, DISCORD_SUPPORT_ROLE_ID, BOT_ID_CONTEXT, AI_TEXT_CHANNEL } = process.env;
+const { 
+	DISCORD_BOT_TOKEN, 
+	DISCORD_SUPPORT_ROLE_ID, 
+	CONTEXT_ID, 
+	ASKAI_CHANNEL } = process.env;
 
 const token = DISCORD_BOT_TOKEN;
 const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
@@ -66,23 +70,23 @@ client.on("messageCreate", async (message) => {
 		});
 		console.log(`[log]: responded to version command in version ${version}`);
 	}
-	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai') || message.content.startsWith('!ask')) {
+	if (message.channel.id === ASKAI_CHANNEL && message.content.startsWith('!askai') || message.channel.id === ASKAI_CHANNEL &&  message.content.startsWith('!ask')) {
 		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4)
 		let aiMessageLoading = await message.channel.send({
 			embeds: [
-				sendEmbedMessage("**RESPONSE:** " + `<a:load:1210497921158619136>`),
+				sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
 			],
 		});
 		await context.query({
-			botId: BOT_ID_CONTEXT,
+			botId: CONTEXT_ID,
 			query: question,
 			onComplete: async (query) => {
 				// console.log(query.output.toString())
 				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
 					msg.edit({
-						content: `<@${message.author.id}>`,
+						content: `Hey <@${message.author.id}> 👇`,
 						embeds: [
-							sendEmbedMessage("**RESPONSE:** " + query.output.toString()),
+							sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
 						],
 
 					})
@@ -607,7 +611,7 @@ client.on("threadCreate", async (post) => {
 	});
 
 	await context.query({
-		botId: BOT_ID_CONTEXT,
+		botId: CONTEXT_ID,
 		query: question,
 		onComplete: async (query) => {
 			

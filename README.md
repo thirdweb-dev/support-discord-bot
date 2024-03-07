@@ -1,3 +1,7 @@
-# Support Bot
+# Discord Bot
 
-A dedicated self-hosted forum-based support Discord bot for the thirdweb community. Specifically made for the [thirdweb](https://discord.gg/thirdweb) Discord community server.
+An AI-powered Discord bot that can help you build in Web3 with [thirdweb](https://thirdweb.com).
+
+## Commands
+
+- `!askai` or `!ask` - Ask the bot a question all things thirdweb.
