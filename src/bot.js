@@ -66,7 +66,7 @@ client.on("messageCreate", async (message) => {
 		});
 		console.log(`[log]: responded to version command in version ${version}`);
 	}
-	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai') || message.content.startsWith('!ask')) {
+	if (message.channel.id === AI_TEXT_CHANNEL && message.content.startsWith('!askai') || message.channel.id === AI_TEXT_CHANNEL &&  message.content.startsWith('!ask')) {
 		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4)
 		let aiMessageLoading = await message.channel.send({
 			embeds: [
