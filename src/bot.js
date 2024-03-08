@@ -537,6 +537,17 @@ client.on("messageCreate", async (message) => {
 			}
 		}
 	}
+
+	// check if the message has mentioned a team member
+	if (mention.users.first()) {
+		let mentioned = message.guild.members.cache.get(mention.users.first().id)
+		if (mentioned.roles.cache.hasAny(...roleIDs)) {
+			message.reply({
+				embeds: [sendEmbedMessage(`We have move to a community driven discord support model.\n\nYou can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Use the command \`!askai\` or \`!ask\` followed by your question to get started.`)],
+			});
+		}
+	}
+
 });
 
 // listen to new forum posts
