@@ -70,34 +70,38 @@ client.on("messageCreate", async (message) => {
 		});
 		console.log(`[log]: responded to version command in version ${version}`);
 	}
-	if (message.channel.id === ASKAI_CHANNEL && message.content.startsWith('!askai') || message.channel.id === ASKAI_CHANNEL &&  message.content.startsWith('!ask')) {
-		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4)
-		let aiMessageLoading = await message.channel.send({
-			embeds: [
-				sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
-			],
-		});
-		await context.query({
-			botId: CONTEXT_ID,
-			query: question,
-			onComplete: async (query) => {
-				// console.log(query.output.toString())
-				await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
-					msg.edit({
-						content: `Hey <@${message.author.id}> 👇`,
-						embeds: [
-							sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
-						],
+	// respond to ask command
+	if ((message.content.startsWith('!askai') || message.content.startsWith('!ask'))) {
+		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4);
+		if (message.channel.id === ASKAI_CHANNEL) {
+			let aiMessageLoading = await message.channel.send({
+				embeds: [
+					sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
+				],
+			});
 
-					})
-				);
+			try {
+				const query = await context.query({
+					botId: CONTEXT_ID,
+					query: question
+				});
 
-			},
-			onError: (error) => {
+				const msg = await message.channel.messages.fetch(aiMessageLoading.id);
+				await msg.edit({
+					content: `Hey <@${message.author.id}> 👇`,
+					embeds: [
+						sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
+					],
+				});
+			} catch (error) {
 				console.error(error);
-			},
-		});
-
+			}
+		} else {
+			message.reply({
+				content: `Hey <@${message.author.id}> 👇`,
+				embeds: [sendEmbedMessage(`You can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Just type your question after the command \`!askai\` or \`!ask\` to get started.`)],
+			});
+		}
 	}
 	// respond to user if the bot mentioned specifically not with everyone
 	if (message.mentions.has(client.user) && !message.mentions.everyone) {
