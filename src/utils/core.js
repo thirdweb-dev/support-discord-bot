@@ -57,7 +57,7 @@ const FeedbackButtonComponent = () => {
 		.setCustomId('not-helpful')
 		.setLabel('Not Helpful')
 		.setEmoji('😔')
-		.setStyle(ButtonStyle.Danger);
+		.setStyle(ButtonStyle.Secondary);
 
 	const row = new ActionRowBuilder()
 		.addComponents(helpful, Nothelpful);
