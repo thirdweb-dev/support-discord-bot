@@ -73,34 +73,57 @@ client.on("messageCreate", async (message) => {
 	// respond to ask command
 	if ((message.content.startsWith('!askai') || message.content.startsWith('!ask'))) {
 		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4);
-		if (message.channel.id === ASKAI_CHANNEL) {
-			let aiMessageLoading = await message.channel.send({
-				embeds: [
-					sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
-				],
-			});
+		const gettingStartedASKAI = `Hello, kindly use \`!ask\` or \`!askai\` followed by your question to get started.`;
 
-			try {
-				const query = await context.query({
-					botId: CONTEXT_ID,
-					query: question
-				});
-
-				const msg = await message.channel.messages.fetch(aiMessageLoading.id);
-				await msg.edit({
-					content: `Hey <@${message.author.id}> 👇`,
-					embeds: [
-						sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
-					],
-				});
-			} catch (error) {
-				console.error(error);
-			}
-		} else {
+		// check if there's a question, if not, send the getting started message, if there's a question, send the response
+		if (!question) {
 			message.reply({
 				content: `Hey <@${message.author.id}> 👇`,
-				embeds: [sendEmbedMessage(`You can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Just type your question after the command \`!askai\` or \`!ask\` to get started.`)],
+				embeds: [sendEmbedMessage(gettingStartedASKAI)],
 			});
+		} else {
+			if (message.channel.id === ASKAI_CHANNEL) {
+				let aiMessageLoading = await message.channel.send({
+					embeds: [
+						sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
+					],
+				});
+	
+				try {
+					const query = await context.query({
+						botId: CONTEXT_ID,
+						query: question
+					});
+	
+					if (query && query.output) {
+						const msg = await message.channel.messages.fetch(aiMessageLoading.id);
+						await msg.edit({
+							content: `Hey <@${message.author.id}> 👇`,
+							embeds: [
+								sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
+							],
+						});
+					} else {
+						console.error('[Error]: query or query.output is undefined');
+						console.log(query);
+						const msg = await message.channel.messages.fetch(aiMessageLoading.id);
+						await msg.edit({
+							content: `Hey <@${message.author.id}> 👇`,
+							embeds: [
+								sendEmbedMessage(`**Response:**\nI'm sorry, I couldn't find a response to your question. Please try again later.`),
+							],
+						});
+					}
+				} catch (error) {
+					console.error(error);
+				}
+			} else {
+				// if the command is not from the channel
+				message.reply({
+					content: `Hey <@${message.author.id}> 👇`,
+					embeds: [sendEmbedMessage(`You can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Just type your question after the command \`!askai\` or \`!ask\` to get started.`)],
+				});
+			}
 		}
 	}
 	// respond to user if the bot mentioned specifically not with everyone
