@@ -1,6 +1,6 @@
 {
   "name": "thirdweb-support-discord-bot",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "A self-hosted dedicated forum-based support Discord bot for the thirdweb community.",
   "main": "src/bot.ts",
   "author": "Waren Gonzaga",
