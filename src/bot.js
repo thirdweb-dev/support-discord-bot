@@ -88,35 +88,39 @@ client.on("messageCreate", async (message) => {
 						sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
 					],
 				});
-	
-				try {
-					const query = await context.query({
-						botId: CONTEXT_ID,
-						query: question
-					});
-	
-					if (query && query.output) {
-						const msg = await message.channel.messages.fetch(aiMessageLoading.id);
-						await msg.edit({
-							content: `Hey <@${message.author.id}> 👇`,
-							embeds: [
-								sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
-							],
-						});
-					} else {
-						console.error('[Error]: query or query.output is undefined');
-						console.log(query);
-						const msg = await message.channel.messages.fetch(aiMessageLoading.id);
-						await msg.edit({
-							content: `Hey <@${message.author.id}> 👇`,
-							embeds: [
-								sendEmbedMessage(`**Response:**\nI'm sorry, I couldn't find a response to your question. Please try again later.`),
-							],
-						});
-					}
-				} catch (error) {
-					console.error(error);
-				}
+
+				await context.query({
+					botId: CONTEXT_ID,
+					query: question,
+					onComplete: async (query) => {
+
+						// respond to the user with the answer from the AI
+						await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
+							msg.edit({
+								content: `Hey <@${message.author.id}> 👇`,
+								embeds: [
+									sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
+								],
+							})
+						);
+
+					},
+					onError: async (error) => {
+						console.error(error);
+						
+						// send a message indicates unseccesful response from the AI
+						await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
+							msg.edit({
+								content: `Hey <@${message.author.id}> 👇`,
+								embeds: [
+									sendEmbedMessage(`**Response:**\nI'm sorry, I couldn't find a response to your question. Please try again later.`),
+								],
+							})
+						);
+
+					},
+				});
+
 			} else {
 				// if the command is not from the channel
 				message.reply({
