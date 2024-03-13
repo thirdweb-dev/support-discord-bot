@@ -697,6 +697,9 @@ client.on("interactionCreate", async (interaction) => {
 		const resolutionTag = post.availableTags.filter((item) => {
 			return item.name == config.tag_name_resolve;
 		});
+		const escalateTag = post.availableTags.filter((item) => {
+			return item.name == config.tag_name_escalate;
+		});
 		let initialTags = [closeTag[0].id, ...postTags];
 		let tags = [...new Set(initialTags)];
 		let initialTagsResolution = [resolutionTag[0].id, ...postTags].filter(
