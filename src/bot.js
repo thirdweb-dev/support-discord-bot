@@ -30,10 +30,10 @@ const { version } = require("../package.json");
 require("dotenv").config();
 
 // discord bot tokens
-const { 
-	DISCORD_BOT_TOKEN, 
-	DISCORD_SUPPORT_ROLE_ID, 
-	CONTEXT_ID, 
+const {
+	DISCORD_BOT_TOKEN,
+	DISCORD_SUPPORT_ROLE_ID,
+	CONTEXT_ID,
 	ASKAI_CHANNEL } = process.env;
 
 const token = DISCORD_BOT_TOKEN;
@@ -107,7 +107,7 @@ client.on("messageCreate", async (message) => {
 					},
 					onError: async (error) => {
 						console.error(error);
-						
+
 						// send a message indicates unseccesful response from the AI
 						await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
 							msg.edit({
@@ -575,7 +575,9 @@ client.on("messageCreate", async (message) => {
 		if (mentioned.roles.cache.hasAny(...roleIDs) && !member.roles.cache.hasAny(...roleIDs)) {
 			message.reply({
 				embeds: [sendEmbedMessage(`We have moved to a community driven discord support model.\n\nYou can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Use the command \`!askai\` or \`!ask\` followed by your question to get started.`)],
-			});
+			}).then(msg => {
+				setTimeout(() => msg.delete(), 60000)
+			  })
 		}
 	}
 
@@ -662,7 +664,7 @@ client.on("threadCreate", async (post) => {
 		botId: CONTEXT_ID,
 		query: question,
 		onComplete: async (query) => {
-			
+
 			await post.messages.fetch(aiMessageLoading.id).then((msg) =>
 				msg.edit({
 					content: "",
@@ -672,7 +674,7 @@ client.on("threadCreate", async (post) => {
 					components: [FeedbackButtonComponent()],
 				})
 			);
-			
+
 		},
 		onError: (error) => {
 			console.error(error);
@@ -692,8 +694,17 @@ client.on("interactionCreate", async (interaction) => {
 		const closeTag = post.availableTags.filter((item) => {
 			return item.name == config.tag_name_close;
 		});
+		const resolutionTag = post.availableTags.filter((item) => {
+			return item.name == config.tag_name_resolve;
+		});
 		let initialTags = [closeTag[0].id, ...postTags];
 		let tags = [...new Set(initialTags)];
+		let initialTagsResolution = [resolutionTag[0].id, ...postTags].filter(
+			(item) => {
+				return item != escalateTag[0].id;
+			}
+		);
+		let tagsResolution = [...new Set(initialTagsResolution)];
 		const question = post.name;
 		if (interaction.channel.ownerId != interaction.user.id) return;
 		if (interaction.customId === "close") {
@@ -733,6 +744,28 @@ client.on("interactionCreate", async (interaction) => {
 				ephemeral: true,
 			});
 			await interaction.message.edit({ components: [] });
+
+			// send embed message upon executing the resolve command
+			await interaction.channel.send({
+				embeds: [sendEmbedMessage(`${config.reminder_resolve}`)],
+				content: `🔔 <@${message.channel.ownerId}>`,
+			});
+
+			// then archive / close it
+			await interaction.channel.edit({
+				appliedTags: tagsResolution,
+				archived: false,
+			});
+			sendData(
+				{
+					post_id: interaction.channel.id,
+					resolution_time: statusTime,
+					resolved_by: "Thirdweb Assistant",
+				},
+				config.datasheet_resolve
+			);
+
+
 		} else if (interaction.customId === "not-helpful") {
 			sendData(
 				{
@@ -742,11 +775,13 @@ client.on("interactionCreate", async (interaction) => {
 				config.datasheet_feedback
 			);
 			await interaction.reply({
-				embeds: [sendEmbedMessage(`Thank you so much for your feedback!`)],
+				embeds: [sendEmbedMessage(`Thank you so much for your feedback, Please click the below "Submit a Ticket" button to create a support ticket!`)],
 				content: `🔔 <@${interaction.channel.ownerId}>`,
 				ephemeral: true,
+				components: [CloseButtonComponent()],
 			});
 			await interaction.message.edit({ components: [] });
+
 		}
 	}
 });
