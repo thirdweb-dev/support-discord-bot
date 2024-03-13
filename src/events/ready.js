@@ -8,9 +8,10 @@ module.exports = {
     execute(bot) {
         bot.user?.setPresence({
             activities: [{
-                name: 'for support.',
+                name: `for assistance.`,
                 type: ActivityType.Watching
             }]
+            
         });
 
         console.log(`[${serverTime()}][online]: logged in as ${bot.user.tag} @ v${packageJSON.version}`);
