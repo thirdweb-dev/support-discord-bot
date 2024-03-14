@@ -27,9 +27,9 @@ const sendEmbedMessage = (message) => {
 const CloseButtonComponent = () => {
 	const close = new ButtonBuilder()
 		.setCustomId('close')
-		.setLabel('Close')
-		.setEmoji('⚒️')
-		.setStyle(ButtonStyle.Danger);
+		.setLabel('Mark as Resolved')
+		.setEmoji('✅')
+		.setStyle(ButtonStyle.Success);
 		
 	const support = new ButtonBuilder()
 		.setLabel('Submit a Ticket')

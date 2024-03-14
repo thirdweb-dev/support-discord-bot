@@ -577,7 +577,7 @@ client.on("messageCreate", async (message) => {
 				embeds: [sendEmbedMessage(`We have moved to a community driven discord support model.\n\nYou can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Use the command \`!askai\` or \`!ask\` followed by your question to get started.`)],
 			}).then(msg => {
 				setTimeout(() => msg.delete(), 60000)
-			  })
+			})
 		}
 	}
 
@@ -644,10 +644,10 @@ client.on("threadCreate", async (post) => {
 	);
 
 	// send message upon creating of new ticket
-	post.send({
-		embeds: [sendEmbedMessage(config.reminder_newpost)],
-		components: [CloseButtonComponent()],
-	});
+	// post.send({
+	// 	embeds: [sendEmbedMessage(config.reminder_newpost)],
+	// 	components: [CloseButtonComponent()],
+	// });
 
 	// log any new posts
 	console.log(
