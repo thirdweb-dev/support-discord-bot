@@ -751,7 +751,7 @@ client.on("interactionCreate", async (interaction) => {
 			// send embed message upon executing the resolve command
 			await interaction.channel.send({
 				embeds: [sendEmbedMessage(`${config.reminder_resolve}`)],
-				content: `🔔 <@${message.channel.ownerId}>`,
+				content: `🔔 <@${interaction.channel.ownerId}>`,
 			});
 
 			// then archive / close it
