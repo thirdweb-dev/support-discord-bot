@@ -24,13 +24,7 @@ const sendEmbedMessage = (message) => {
  * @param {string} message 
  * @returns pre-defined embed style
  */
-const CloseButtonComponent = () => {
-	const close = new ButtonBuilder()
-		.setCustomId('close')
-		.setLabel('Close')
-		.setEmoji('⚒️')
-		.setStyle(ButtonStyle.Danger);
-		
+const CloseButtonComponent = () => {	
 	const support = new ButtonBuilder()
 		.setLabel('Submit a Ticket')
 		.setEmoji('💬')
@@ -38,7 +32,7 @@ const CloseButtonComponent = () => {
 		.setStyle(ButtonStyle.Link);
 
 	const row = new ActionRowBuilder()
-		.addComponents(close, support);
+		.addComponents(support);
 	return row
 }
 
