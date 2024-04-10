@@ -778,7 +778,7 @@ client.on("interactionCreate", async (interaction) => {
 				config.datasheet_feedback
 			);
 			await interaction.reply({
-				embeds: [sendEmbedMessage(`Thank you so much for your feedback, Please click the below "Submit a Ticket" button to create a support ticket!`)],
+				embeds: [sendEmbedMessage(`Thank you for your valuable feedback, this will help us improve the responses of our AI assistant.\n\nIn the meantime, would you like to contact a human customer success agent? Just click the button below to submit a ticket.`)],
 				content: `🔔 <@${interaction.channel.ownerId}>`,
 				ephemeral: true,
 				components: [CloseButtonComponent()],
