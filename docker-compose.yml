@@ -1,0 +1,5 @@
+services:
+  slackbot:
+    build:
+      context: .
+    image: support-discord-bot:latest
