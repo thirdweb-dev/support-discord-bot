@@ -1,5 +1,7 @@
 services:
-  slackbot:
+  discordbot:
     build:
       context: .
     image: support-discord-bot:latest
+    env_file:
+      - .env
