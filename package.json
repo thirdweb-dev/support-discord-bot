@@ -12,13 +12,12 @@
   "private": true,
   "dependencies": {
     "@context-labs/sdk": "^0.0.107",
-    "discord.js": "^14.10.2",
+    "discord.js": "^14.14.1",
     "dotenv": "^16.0.3",
     "fs-extra": "^11.1.1",
-    "google-spreadsheet": "^3.3.0",
-    "moment": "^2.29.4"
+    "google-spreadsheet": "^4.1.1",
+    "moment": "^2.29.4",
+    "nodemon": "^3.1.0"
   },
-  "devDependencies": {
-    "nodemon": "^2.0.20"
-  }
+  "devDependencies": {}
 }
