@@ -1,6 +1,6 @@
 {
   "name": "thirdweb-support-discord-bot",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "description": "A self-hosted dedicated forum-based support Discord bot for the thirdweb community.",
   "main": "src/bot.ts",
   "author": "Waren Gonzaga",
@@ -15,6 +15,7 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.0.3",
     "fs-extra": "^11.1.1",
+    "google-auth-library": "^9.8.0",
     "google-spreadsheet": "^4.1.1",
     "moment": "^2.29.4",
     "nodemon": "^3.1.0"

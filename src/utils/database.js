@@ -1,9 +1,17 @@
 const config = require('../config.json');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
+const { JWT } = require('google-auth-library');
 require('dotenv').config();
 
+// configure the JWT and authenticate
+const jwt = new JWT({
+	email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+	key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+	scopes: ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.file'],
+});
+
 // load the spreadsheet
-const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID);
+const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID, jwt);
 
 /**
  * sends data to the spreadsheet
@@ -12,10 +20,10 @@ const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID);
  */
 const sendData = async (data, datasheet) => {
 	// authenticate
-	await doc.useServiceAccountAuth({
-		client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-		private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-	});
+	// await doc.useServiceAccountAuth({
+	// 	client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+	// 	private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+	// });
 	// load the "initial" sheet
 	await doc.loadInfo();
 	const sheet = doc.sheetsByTitle[datasheet];
