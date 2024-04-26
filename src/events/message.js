@@ -1,7 +1,9 @@
-const { Events } = require('discord.js');
+const { Events, Client, GatewayIntentBits, Partials } = require("discord.js");
+const { sendEmbedMessage } = require("../utils/core");
+const { version } = require("../../package.json");
 
 module.exports = {
-    name: Events.ClientMessageCreate,
+    name: Events.MessageCreate,
     once: false,
     execute(message) {
 
@@ -11,9 +13,9 @@ module.exports = {
       // check ping
       if (message.content === "!!ping") {
         message.reply({
-          embeds: [sendEmbedMessage(`Pong: ${client.ws.ping}ms`)],
+          embeds: [sendEmbedMessage(`Latency is ${Date.now() - message.createdTimestamp}ms.`)],
         });
-        console.log(`[log]: responded to ping command in ${client.ws.ping}ms`);
+        console.log(`[log]: responded to ping command`);
       }
 
       // check version
