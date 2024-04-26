@@ -133,105 +133,29 @@ client.on("messageCreate", async (message) => {
 //listen to button clicks
 client.on("interactionCreate", async (interaction) => {
 	if (interaction.isButton()) {
-		const forum = client.guilds.cache.get(interaction.guild.id);
-		const post = forum.channels.cache.get(interaction.channel.parent.id);
-		const postedBy = (await client.users.fetch(interaction.channel.ownerId))
-			.username;
-		const postTags = interaction.channel.appliedTags;
-		const statusTime = formatTime(interaction.createdTimestamp);
-		const closeTag = post.availableTags.filter((item) => {
-			return item.name == config.tag_name_close;
-		});
-		const resolutionTag = post.availableTags.filter((item) => {
-			return item.name == config.tag_name_resolve;
-		});
-		const escalateTag = post.availableTags.filter((item) => {
-			return item.name == config.tag_name_escalate;
-		});
-		let initialTags = [closeTag[0].id, ...postTags];
-		let tags = [...new Set(initialTags)];
-		let initialTagsResolution = [resolutionTag[0].id, ...postTags].filter(
-			(item) => {
-				return item != escalateTag[0].id;
-			}
-		);
-		let tagsResolution = [...new Set(initialTagsResolution)];
-		const question = post.name;
-		if (interaction.channel.ownerId != interaction.user.id) return;
-		if (interaction.customId === "close") {
-			// send embed message upon executing the close command
-			await interaction.channel.send({
-				embeds: [sendEmbedMessage(`${config.reminder_close}`)],
-				content: `🔔 <@${interaction.channel.ownerId}>`,
-			});
-			await interaction.message.edit({ components: [] });
-			// then archive / close it
-			interaction.channel.edit({
-				appliedTags: tags,
-				archived: true,
-			});
 
-			sendData(
-				{
-					post_id: interaction.channel.id,
-					close_time: statusTime,
-					closed_by: postedBy,
-				},
-				config.datasheet_close
-			);
-		} else if (interaction.customId === "helpful") {
-			// console.log(question)
-			sendData(
-				{
-					post_id: interaction.channel.id,
-					feedback: true,
-				},
-				config.datasheet_feedback
-			);
+		if (interaction.message.ownerId != interaction.user.id) return;
+		if (interaction.customId === "helpful") {
+
 
 			await interaction.reply({
 				embeds: [sendEmbedMessage(`Thank you so much for your feedback!`)],
 				content: `🔔 <@${interaction.channel.ownerId}>`,
 				ephemeral: true,
 			});
-			await interaction.message.edit({ components: [] });
-
-			// send embed message upon executing the resolve command
-			await interaction.channel.send({
-				embeds: [sendEmbedMessage(`${config.reminder_resolve}`)],
-				content: `🔔 <@${interaction.channel.ownerId}>`,
-			});
-
-			// then archive / close it
-			await interaction.channel.edit({
-				appliedTags: tagsResolution,
-				archived: false,
-			});
-			sendData(
-				{
-					post_id: interaction.channel.id,
-					resolution_time: statusTime,
-					resolved_by: "Thirdweb Assistant",
-				},
-				config.datasheet_resolve
-			);
+			// to-do: manage the feedback & mark it as helpful
 
 
 		} else if (interaction.customId === "not-helpful") {
-			sendData(
-				{
-					post_id: post.id,
-					feedback: false,
-				},
-				config.datasheet_feedback
-			);
+
 			await interaction.reply({
 				embeds: [sendEmbedMessage(`Thank you for your valuable feedback, this will help us improve the responses of our AI assistant.\n\nIn the meantime, would you like to contact a human customer success agent? Just click the link or the button below to submit a ticket.`)],
 				content: `🔔 <@${interaction.channel.ownerId}>`,
 				ephemeral: true,
 				components: [CloseButtonComponent()],
 			});
-			await interaction.message.edit({ components: [] });
+			// to-do: manage the feedback & mark it as not helpful
+
 
 		}
 	}
