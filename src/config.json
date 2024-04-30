@@ -1,24 +1,5 @@
 {
     "command_prefix": "!",
     "utc_offset": -8,
-    "reminder_newpost": "**Thanks for reaching out!** \n\nThis support channel is where you can get help from like-minded developers in the community.",
-    "reminder_mention": "Hey there! If you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Thank you for choosing to build with us!",
-    "reminder_max_tags": "Max tags (5) exceeded. Please update the original post with fewer tags and try again.",
-    "reminder_close": "Hello! This post was closed due to inactivity, missing information, irrelevant, duplicate or otherwise. If you believe this was a mistake or you wish to re-open, please let us know here and we're happy to do so!",
-    "reminder_resolve": "This post has been marked as resolved. Keep building!",
-    "reminder_escalate": "We have escalated this to our team to investigate. We'll get back to you here as soon as possible. \n\nWhile waiting, explore our **[AI assistant](https://support.thirdweb.com)** that can help answer your additional questions. \n\nWe've trained our AI assistant on thousands of our resources to help you get an answer in seconds.",
-    "redirect_tracking": [
-        {
-            "name":"Support URL",
-            "url":"support.thirdweb.com"
-        },
-        {
-            "name":"Portal URL",
-            "url":"portal.thirdweb.com"
-        },
-        {
-            "name":"Blog URL",
-            "url":"blog.thirdweb.com"
-        }
-    ]
+    "reminder_mention": "Hey there! If you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Thank you for choosing to build with us!"
 }
