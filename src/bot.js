@@ -132,6 +132,8 @@ client.on("messageCreate", async (message) => {
 
 //listen to button clicks
 client.on("interactionCreate", async (interaction) => {
+
+	// check if the interaction is a button click
 	if (interaction.isButton()) {
 
 		if (interaction.message.ownerId != interaction.user.id) return;
@@ -143,7 +145,7 @@ client.on("interactionCreate", async (interaction) => {
 				content: `🔔 <@${interaction.channel.ownerId}>`,
 				ephemeral: true,
 			});
-			// to-do: manage the feedback & mark it as helpful
+			// TODO: manage the feedback & mark it as helpful
 
 
 		} else if (interaction.customId === "not-helpful") {
@@ -154,8 +156,7 @@ client.on("interactionCreate", async (interaction) => {
 				ephemeral: true,
 				components: [CloseButtonComponent()],
 			});
-			// to-do: manage the feedback & mark it as not helpful
-
+			// TODO: manage the feedback & mark it as not helpful
 
 		}
 	}

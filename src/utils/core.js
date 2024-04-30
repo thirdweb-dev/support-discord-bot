@@ -93,6 +93,5 @@ module.exports = {
 	formatTime,
 	getUsernameFromId,
 	getURLFromMessage,
-	serverTime,
-
+	serverTime
 }
