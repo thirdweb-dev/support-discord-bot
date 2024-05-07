@@ -8,7 +8,6 @@ const {
 const config = require("./config.json");
 const {
 	sendEmbedMessage,
-	formatTime,
 	CloseButtonComponent,
 } = require("./utils/core");
 const { sendData } = require("./utils/database");

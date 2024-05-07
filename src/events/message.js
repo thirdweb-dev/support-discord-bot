@@ -1,5 +1,5 @@
 const { Events, Client, GatewayIntentBits, Partials } = require("discord.js");
-const { sendEmbedMessage } = require("../utils/core");
+const { sendEmbedMessage, serverTime } = require("../utils/core");
 const { version } = require("../../package.json");
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
         message.reply({
           embeds: [sendEmbedMessage(`Latency is ${Date.now() - message.createdTimestamp}ms.`)],
         });
-        console.log(`[log]: responded to ping command`);
+        console.log(`[${serverTime()}][log]: responded to ping command`);
       }
 
       // check version
@@ -23,7 +23,7 @@ module.exports = {
         message.reply({
           embeds: [sendEmbedMessage(`Version: ${version}`)],
         });
-        console.log(`[log]: responded to version command in version ${version}`);
+        console.log(`[${serverTime()}][log]: responded to version command in version ${version}`);
       }
 
     },
