@@ -48,7 +48,7 @@ client.on("messageCreate", async (message) => {
 
 	// respond to ask command
 	if ((message.content.startsWith('!askai') || message.content.startsWith('!ask'))) {
-		let question = message.content.startsWith('!!askai') ? message.content.slice(6) : message.content.slice(4);
+		let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4);
 		const gettingStartedASKAI = `Hello, kindly use \`!ask\` or \`!askai\` followed by your question to get started.`;
 
 		// check if there's a question, if not, send the getting started message, if there's a question, send the response
