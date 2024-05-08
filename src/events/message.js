@@ -1,7 +1,16 @@
-const { Events } = require("discord.js");
-const { client } = require("../bot");
+const { Client, Events } = require("discord.js");
 const { sendEmbedMessage, serverTime } = require("../utils/core");
 const { version } = require("../../package.json");
+
+// discord bot instents and partials
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMessages,
+	],
+	partials: [Partials.Channel, Partials.Message],
+});
 
 module.exports = {
     name: Events.MessageCreate,

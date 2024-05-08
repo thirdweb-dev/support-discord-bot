@@ -214,6 +214,3 @@ redis.on("ready", () => {
 	// log in to Discord with your client's token
 	client.login(token);
 });
-
-// export client
-module.exports = client;
