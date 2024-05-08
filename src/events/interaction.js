@@ -4,7 +4,7 @@ const {
 	serverTime, 
 	CloseButtonComponent } = require("../utils/core");
 const { ContextSDK } = require("@context-labs/sdk");
-const { redis } = require("./database");
+const redis = require("./database");
 
 // const redis = new Redis(REDIS_SERVER_URL);
 const context = new ContextSDK({});

@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("node:path");
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { serverTime } = require("./utils/core");
-const { redis } = require("./events/database");
+const redis = require("./events/database");
 
 // dot env
 require("dotenv").config();

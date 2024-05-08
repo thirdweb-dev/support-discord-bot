@@ -5,7 +5,7 @@ const {
   FeedbackButtonComponent } = require("../utils/core");
 const { version } = require("../../package.json");
 const config = require("../config.json");
-const { redis } = require("./database");
+const redis = require("./database");
 const { ContextSDK } = require("@context-labs/sdk");
 
 // discord bot env
