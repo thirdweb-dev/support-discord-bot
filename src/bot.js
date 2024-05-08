@@ -112,22 +112,6 @@ client.on("messageCreate", async (message) => {
 		}
 	}
 
-	// get the details from user who send command
-	const member = message.member;
-	const mention = message.mentions;
-
-	// check if the message has mentioned a team member and not a reply
-	if (mention.users.first() && !message.reference) {
-		let mentioned = message.guild.members.cache.get(mention.users.first().id)
-		if (mentioned.roles.cache.hasAny(...roleIDs) && !member.roles.cache.hasAny(...roleIDs)) {
-			message.reply({
-				embeds: [sendEmbedMessage(`We have moved to a community driven discord support model.\n\nYou can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Use the command \`!askai\` or \`!ask\` followed by your question to get started.`)],
-			}).then(msg => {
-				setTimeout(() => msg.delete(), 60000)
-			})
-		}
-	}
-
 });
 
 //listen to button clicks
