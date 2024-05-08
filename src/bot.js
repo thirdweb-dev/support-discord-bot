@@ -208,5 +208,11 @@ for (const file of eventFiles) {
 	}
 }
 
-// log in to Discord with your client's token
-client.login(token);
+//  check if the Redis is ready then log in the bot to Discord
+redis.on("ready", () => {
+  console.log(`[${serverTime()}][log]: Redis is ready!`);
+
+	// log in to Discord with your client's token
+	client.login(token);
+});
+

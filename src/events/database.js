@@ -13,9 +13,6 @@ redis.on("connect", () => {
 redis.on("reconnecting", () =>{
   console.log(`[${serverTime()}][log]: Reconnecting to Redis...`);
 });
-redis.on("ready", () => {
-  console.log(`[${serverTime()}][log]: Redis is ready!`);
-  });
 redis.on("error", (err) => () => {
   console.log(`[${serverTime()}][error]: Redis Error: ${err}`);
 });
