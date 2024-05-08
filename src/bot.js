@@ -9,11 +9,12 @@ const config = require("./config.json");
 const {
 	sendEmbedMessage,
 	CloseButtonComponent,
+	FeedbackButtonComponent
 } = require("./utils/core");
-const { sendData } = require("./utils/database");
 
 // usecontext.ai imports
 const { ContextSDK } = require("@context-labs/sdk");
+const Redis = require("ioredis");
 
 require("dotenv").config();
 
@@ -22,7 +23,9 @@ const {
 	DISCORD_BOT_TOKEN,
 	DISCORD_SUPPORT_ROLE_ID,
 	CONTEXT_ID,
-	ASKAI_CHANNEL } = process.env;
+	ASKAI_CHANNEL,
+	REDIS_SERVER_URL
+} = process.env;
 
 const token = DISCORD_BOT_TOKEN;
 const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
@@ -36,7 +39,7 @@ const client = new Client({
 	],
 	partials: [Partials.Channel, Partials.Message],
 });
-
+const redis = new Redis(REDIS_SERVER_URL);
 //create context instance
 const context = new ContextSDK({});
 
@@ -66,15 +69,18 @@ client.on("messageCreate", async (message) => {
 					botId: CONTEXT_ID,
 					query: question,
 					onComplete: async (query) => {
-
 						// respond to the user with the answer from the AI
-						await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
+						await message.channel.messages.fetch(aiMessageLoading.id).then((msg) => {
 							msg.edit({
 								content: `Hey <@${message.author.id}> 👇`,
 								embeds: [
 									sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
 								],
+								components: [FeedbackButtonComponent()],
+
 							})
+							redis.set(msg.id, query._id);
+						}
 						);
 
 					},
@@ -88,6 +94,7 @@ client.on("messageCreate", async (message) => {
 								embeds: [
 									sendEmbedMessage(`**Response:**\nI'm sorry, I couldn't find a response to your question. Please try again later.`),
 								],
+
 							})
 						);
 
@@ -131,31 +138,55 @@ client.on("messageCreate", async (message) => {
 
 //listen to button clicks
 client.on("interactionCreate", async (interaction) => {
+	let messageId = interaction.message.id
 
 	// check if the interaction is a button click
 	if (interaction.isButton()) {
 
-		if (interaction.message.ownerId != interaction.user.id) return;
+
 		if (interaction.customId === "helpful") {
-
-
 			await interaction.reply({
 				embeds: [sendEmbedMessage(`Thank you so much for your feedback!`)],
-				content: `🔔 <@${interaction.channel.ownerId}>`,
+				content: `🔔 <@${interaction.user.id}>`,
 				ephemeral: true,
 			});
-			// TODO: manage the feedback & mark it as helpful
+			await redis.get(messageId, async (err, result) => {
+				if (err) {
+					console.error(err);
+				} else {
+					await context.setQueryFeedback({
+						queryId: result,
+						helpful: true,
+					});
+				}
+			});
+			await interaction.message.edit({ components: [] });
+			await redis.del(messageId);
+
+
 
 
 		} else if (interaction.customId === "not-helpful") {
 
 			await interaction.reply({
 				embeds: [sendEmbedMessage(`Thank you for your valuable feedback, this will help us improve the responses of our AI assistant.\n\nIn the meantime, would you like to contact a human customer success agent? Just click the link or the button below to submit a ticket.`)],
-				content: `🔔 <@${interaction.channel.ownerId}>`,
+				content: `🔔 <@${interaction.user.id}>`,
 				ephemeral: true,
 				components: [CloseButtonComponent()],
 			});
-			// TODO: manage the feedback & mark it as not helpful
+			await redis.get(messageId, async (err, result) => {
+				if (err) {
+					console.error(err);
+				} else {
+					await context.setQueryFeedback({
+						queryId: result,
+						helpful: false,
+					});
+				}
+			});
+			await interaction.message.edit({ components: [] });
+			await redis.del(messageId);
+
 
 		}
 	}
