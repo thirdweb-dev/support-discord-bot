@@ -158,6 +158,7 @@ client.on("interactionCreate", async (interaction) => {
 						queryId: result,
 						helpful: true,
 					});
+					console.log(`[${serverTime()}][log]: User sent a "Helpful" feedback!`);
 				}
 			});
 			await interaction.message.edit({ components: [] });
@@ -182,6 +183,7 @@ client.on("interactionCreate", async (interaction) => {
 						queryId: result,
 						helpful: false,
 					});
+					console.log(`[${serverTime()}][log]: User sent a "Not Helpful" feedback!`);
 				}
 			});
 			await interaction.message.edit({ components: [] });
