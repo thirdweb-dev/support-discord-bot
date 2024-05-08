@@ -4,13 +4,9 @@ const {
 	serverTime, 
 	CloseButtonComponent } = require("../utils/core");
 const { ContextSDK } = require("@context-labs/sdk");
-const Redis = require("ioredis");
+const { redis } = require("./database");
 
-const {
-	REDIS_SERVER_URL
-} = process.env;
-
-const redis = new Redis(REDIS_SERVER_URL);
+// const redis = new Redis(REDIS_SERVER_URL);
 const context = new ContextSDK({});
 
 module.exports = {

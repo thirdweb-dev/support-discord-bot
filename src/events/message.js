@@ -5,18 +5,16 @@ const {
   FeedbackButtonComponent } = require("../utils/core");
 const { version } = require("../../package.json");
 const config = require("../config.json");
-const Redis = require("ioredis");
+const { redis } = require("./database");
 const { ContextSDK } = require("@context-labs/sdk");
 
 // discord bot env
 const {
 	DISCORD_SUPPORT_ROLE_ID,
 	ASKAI_CHANNEL,
-  CONTEXT_ID,
-  REDIS_SERVER_URL } = process.env;
+  CONTEXT_ID} = process.env;
 const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
 
-const redis = new Redis(REDIS_SERVER_URL);
 const context = new ContextSDK({});
 
 module.exports = {

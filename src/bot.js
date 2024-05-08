@@ -2,16 +2,13 @@ const fs = require("fs");
 const path = require("node:path");
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { serverTime } = require("./utils/core");
-const Redis = require("ioredis");
+const { redis } = require("./events/database");
 
 // dot env
 require("dotenv").config();
 
 // discord bot environment vars
-const {
-	DISCORD_BOT_TOKEN,
-	REDIS_SERVER_URL
-} = process.env;
+const { DISCORD_BOT_TOKEN } = process.env;
 
 // discord bot instents and partials
 const client = new Client({
@@ -22,9 +19,6 @@ const client = new Client({
 	],
 	partials: [Partials.Channel, Partials.Message],
 });
-
-// connect to redis
-const redis = new Redis(REDIS_SERVER_URL);
 
 /**
  * Don't modify or update the code below.

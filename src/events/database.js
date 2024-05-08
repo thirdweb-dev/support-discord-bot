@@ -15,3 +15,5 @@ redis.on("reconnecting", () =>{
 redis.on("error", (err) => () => {
   console.log(`[${serverTime()}][error]: Redis Error: ${err}`);
 });
+
+module.exports = redis;
