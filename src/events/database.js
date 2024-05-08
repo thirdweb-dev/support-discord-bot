@@ -1,6 +1,8 @@
 const Redis = require("ioredis");
 const { serverTime } = require('../utils/core');
 
+require("dotenv").config();
+
 const { REDIS_SERVER_URL } = process.env;
 
 const redis = new Redis(REDIS_SERVER_URL);
