@@ -1,5 +1,8 @@
 const { Events } = require("discord.js");
-const { sendEmbedMessage, serverTime } = require("../utils/core");
+const { 
+	sendEmbedMessage, 
+	serverTime, 
+	CloseButtonComponent } = require("../utils/core");
 const { ContextSDK } = require("@context-labs/sdk");
 const Redis = require("ioredis");
 

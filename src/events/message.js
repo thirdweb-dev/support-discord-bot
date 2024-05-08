@@ -1,19 +1,32 @@
 const { Events } = require("discord.js");
-const { sendEmbedMessage, serverTime } = require("../utils/core");
+const { 
+  sendEmbedMessage, 
+  serverTime,
+  FeedbackButtonComponent } = require("../utils/core");
 const { version } = require("../../package.json");
 const config = require("../config.json");
+const Redis = require("ioredis");
+const { ContextSDK } = require("@context-labs/sdk");
 
 // discord bot env
 const {
 	DISCORD_SUPPORT_ROLE_ID,
-	ASKAI_CHANNEL
-} = process.env;
+	ASKAI_CHANNEL,
+  CONTEXT_ID,
+  REDIS_SERVER_URL } = process.env;
 const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
+
+const redis = new Redis(REDIS_SERVER_URL);
+const context = new ContextSDK({});
 
 module.exports = {
     name: Events.MessageCreate,
     once: false,
-    execute(message) {
+    async execute(message) {
+
+      // get the details from user who send command
+      const member = message.member;
+      const mention = message.mentions;
 
       // prevent someone from sending DM to the bot.
       if (message.author.bot) return;
@@ -39,6 +52,75 @@ module.exports = {
       }
 
       /**
+       * User commands
+       */
+
+      // respond to ask command
+      if ((message.content.startsWith('!askai') || message.content.startsWith('!ask'))) {
+        let question = message.content.startsWith('!askai') ? message.content.slice(6) : message.content.slice(4);
+        const gettingStartedASKAI = `Hello, kindly use \`!ask\` or \`!askai\` followed by your question to get started.`;
+
+        // check if there's a question, if not, send the getting started message, if there's a question, send the response
+        if (!question) {
+          message.reply({
+            content: `Hey <@${message.author.id}> 👇`,
+            embeds: [sendEmbedMessage(gettingStartedASKAI)],
+          });
+        } else {
+          if (message.channel.id === ASKAI_CHANNEL) {
+            let aiMessageLoading = await message.channel.send({
+              embeds: [
+                sendEmbedMessage("**🤖 Beep Boop Boop Beep:** " + `<a:load:1210497921158619136> thinking...`),
+              ],
+            });
+
+            await context.query({
+              botId: CONTEXT_ID,
+              query: question,
+              onComplete: async (query) => {
+                // respond to the user with the answer from the AI
+                await message.channel.messages.fetch(aiMessageLoading.id).then((msg) => {
+                  msg.edit({
+                    content: `Hey <@${message.author.id}> 👇`,
+                    embeds: [
+                      sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
+                    ],
+                    components: [FeedbackButtonComponent()],
+
+                  })
+                  redis.set(msg.id, query._id);
+                }
+                );
+
+              },
+              onError: async (error) => {
+                console.error(error);
+
+                // send a message indicates unseccesful response from the AI
+                await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
+                  msg.edit({
+                    content: `Hey <@${message.author.id}> 👇`,
+                    embeds: [
+                      sendEmbedMessage(`**Response:**\nI'm sorry, I couldn't find a response to your question. Please try again later.`),
+                    ],
+
+                  })
+                );
+
+              },
+            });
+
+          } else {
+            // if the command is not from the channel
+            message.reply({
+              content: `Hey <@${message.author.id}> 👇`,
+              embeds: [sendEmbedMessage(`You can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Just type your question after the command \`!askai\` or \`!ask\` to get started.`)],
+            });
+          }
+        }
+      }
+
+      /**
        * Response to message events
        */
       // respond to user if the bot mentioned specifically not with everyone
@@ -48,10 +130,6 @@ module.exports = {
           embeds: [sendEmbedMessage(config.reminder_mention)],
         });
       }
-
-      // get the details from user who send command
-      const member = message.member;
-      const mention = message.mentions;
 
       // check if the message has mentioned a team member and not a reply
       if (mention.users.first() && !message.reference) {
