@@ -1,16 +1,6 @@
-const { Client, Events, GatewayIntentBits, Partials } = require("discord.js");
+const { Events } = require("discord.js");
 const { sendEmbedMessage, serverTime } = require("../utils/core");
 const { version } = require("../../package.json");
-
-// discord bot instents and partials
-const client = new Client({
-	intents: [
-		GatewayIntentBits.Guilds,
-		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildMessages,
-	],
-	partials: [Partials.Channel, Partials.Message],
-});
 
 // discord bot env
 const {
@@ -51,7 +41,7 @@ module.exports = {
        * Response to message events
        */
       // respond to user if the bot mentioned specifically not with everyone
-      if (message.mentions.has(client.user) && !message.mentions.everyone) {
+      if (message.mentions.has(message.client.user) && !message.mentions.everyone) {
         // convert this to embed message.reply({config.mention_message);
         message.reply({
           embeds: [sendEmbedMessage(config.reminder_mention)],
