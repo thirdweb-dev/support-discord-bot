@@ -1,7 +1,7 @@
 const { Events } = require("discord.js");
 const { sendEmbedMessage, serverTime } = require("../utils/core");
 const { version } = require("../../package.json");
-const config = require("./config.json");
+const config = require("../config.json");
 
 // discord bot env
 const {
