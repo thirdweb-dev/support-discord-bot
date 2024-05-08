@@ -1,29 +1,17 @@
 const fs = require("fs");
 const path = require("node:path");
-const {
-	Client,
-	GatewayIntentBits,
-	Partials,
-} = require("discord.js");
-const {
-	serverTime,
-} = require("./utils/core");
-
-// usecontext.ai imports
-const { ContextSDK } = require("@context-labs/sdk");
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
+const { serverTime } = require("./utils/core");
 const Redis = require("ioredis");
 
+// dot env
 require("dotenv").config();
 
-// discord bot tokens
+// discord bot environment vars
 const {
 	DISCORD_BOT_TOKEN,
-	DISCORD_SUPPORT_ROLE_ID,
 	REDIS_SERVER_URL
 } = process.env;
-
-const token = DISCORD_BOT_TOKEN;
-const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
 
 // discord bot instents and partials
 const client = new Client({
@@ -34,14 +22,9 @@ const client = new Client({
 	],
 	partials: [Partials.Channel, Partials.Message],
 });
+
+// connect to redis
 const redis = new Redis(REDIS_SERVER_URL);
-//create context instance
-const context = new ContextSDK({});
-
-// listen to post messages
-// client.on("messageCreate", async (message) => {
-
-// });
 
 /**
  * Don't modify or update the code below.
@@ -69,5 +52,5 @@ redis.on("ready", () => {
   console.log(`[${serverTime()}][log]: Redis is ready!`);
 
 	// log in to Discord with your client's token
-	client.login(token);
+	client.login(DISCORD_BOT_TOKEN);
 });
