@@ -111,13 +111,6 @@ client.on("messageCreate", async (message) => {
 			}
 		}
 	}
-	// respond to user if the bot mentioned specifically not with everyone
-	if (message.mentions.has(client.user) && !message.mentions.everyone) {
-		// convert this to embed message.reply({config.mention_message);
-		message.reply({
-			embeds: [sendEmbedMessage(config.reminder_mention)],
-		});
-	}
 
 	// get the details from user who send command
 	const member = message.member;
@@ -193,7 +186,12 @@ client.on("interactionCreate", async (interaction) => {
 	}
 });
 
-// reading events file (DO NOT MODIFY THIS)
+/**
+ * Don't modify or update the code below.
+ * Keep your changes above ^
+ */
+
+// reading events file
 const eventsPath = path.join(__dirname, "events");
 const eventFiles = fs
 	.readdirSync(eventsPath)
@@ -217,3 +215,5 @@ redis.on("ready", () => {
 	client.login(token);
 });
 
+// export client
+module.exports = client;
