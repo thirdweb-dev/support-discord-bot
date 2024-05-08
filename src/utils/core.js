@@ -68,20 +68,9 @@ const formatTime = (date) => {
 }
 
 /**
- * get username from ownerid/author.id
- * @param {number} id user's id
- * @returns 
+ * utility to return server time
+ * @returns server time
  */
-const getUsernameFromId = async (id) => {
-	return (await client.users.fetch(id)).username;
-}
-
-const getURLFromMessage = (message) => {
-	const regex = /(https?:\/\/[^\s]+)/g;
-	const url = message.match(regex);
-	return url;
-}
-
 const serverTime = () => {
 	return moment.utc().utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
 }
@@ -91,7 +80,5 @@ module.exports = {
 	CloseButtonComponent,
 	FeedbackButtonComponent,
 	formatTime,
-	getUsernameFromId,
-	getURLFromMessage,
 	serverTime
 }
