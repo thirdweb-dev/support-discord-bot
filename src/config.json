@@ -1,46 +1,10 @@
 {
     "command_prefix": "!",
-    "command_resolve": "resolve",
-    "command_close": "close",
-    "command_end": "end",
-    "command_escalate": "escalate",
-    "command_bug": "bug",
-    "command_sc_resolve": "res",
-    "command_sc_close": "cls",
-    "command_sc_escalate": "esc",
-    "command_reopen": "reopen",
-    "tag_name_resolve": "Solved",
-    "tag_name_close": "Closed",
-    "tag_name_escalate": "Escalated",
-    "tag_name_bug": "Bug",
-    "datasheet_init": "init",
-    "datasheet_response": "response",
-    "datasheet_resolve": "resolve",
-    "datasheet_close": "close",
-    "datasheet_escalate": "escalate",
-    "datasheet_reopen": "reopen",
-    "datasheet_bug": "bug",
-    "datasheet_redirect": "redirect",
-    "datasheet_feedback": "feedback",
     "utc_offset": -8,
-    "reminder_newpost": "**Thanks for reaching out!** \n\nThis support channel is where you can get help from like-minded developers in the community.",
-    "reminder_mention": "Hey there! If you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Thank you for choosing to build with us!",
-    "reminder_max_tags": "Max tags (5) exceeded. Please update the original post with fewer tags and try again.",
-    "reminder_close": "Hello! This post was closed due to inactivity, missing information, irrelevant, duplicate or otherwise. If you believe this was a mistake or you wish to re-open, please let us know here and we're happy to do so!",
-    "reminder_resolve": "This post has been marked as resolved. Keep building!",
-    "reminder_escalate": "We have escalated this to our team to investigate. We'll get back to you here as soon as possible. \n\nWhile waiting, explore our **[AI assistant](https://support.thirdweb.com)** that can help answer your additional questions. \n\nWe've trained our AI assistant on thousands of our resources to help you get an answer in seconds.",
-    "redirect_tracking": [
-        {
-            "name":"Support URL",
-            "url":"support.thirdweb.com"
-        },
-        {
-            "name":"Portal URL",
-            "url":"portal.thirdweb.com"
-        },
-        {
-            "name":"Blog URL",
-            "url":"blog.thirdweb.com"
-        }
-    ]
-}
+    "ai_thinking_message": "**🤖 Beep Boop Boop Beep:** <a:load:1210497921158619136> thinking...",
+    "getting_started_ai_message": "Hello, kindly use \\`!ask\\` or \\`!askai\\` followed by your question to get started.",
+    "helpful_message": "Thank you so much for your feedback!",
+    "not_helpful_messsage": "Thank you for your valuable feedback, this will help us improve the responses of our AI assistant.\n\nIn the meantime, would you like to contact a human customer success agent? Just click the link or the button below to submit a ticket.",
+    "reminder_mention": "Hey there! If you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Thank you for choosing to build with us!"
+  }
+  
