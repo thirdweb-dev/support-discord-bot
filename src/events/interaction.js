@@ -6,6 +6,7 @@ const {
 const redis = require("../utils/database");
 const config = require("../config.json");
 const context = require("../utils/ai");
+const { setQueryFeedback } = require("../utils/ai");
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -26,10 +27,7 @@ module.exports = {
 					if (err) {
 						console.error(err);
 					} else {
-						await context.setQueryFeedback({
-							queryId: result,
-							helpful: true,
-						});
+						setQueryFeedback(result, true);
 					}
 				});
 				await interaction.message.edit({ components: [] });
@@ -50,10 +48,7 @@ module.exports = {
 					if (err) {
 						console.error(err);
 					} else {
-						await context.setQueryFeedback({
-							queryId: result,
-							helpful: false,
-						});
+						setQueryFeedback(result, false);
 					}
 				});
 				await interaction.message.edit({ components: [] });
