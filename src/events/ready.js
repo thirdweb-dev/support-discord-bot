@@ -14,6 +14,6 @@ module.exports = {
             
         });
 
-        console.log(`[${serverTime()}][online]: logged in as ${bot.user.tag} @ v${packageJSON.version}`);
+        console.log(`[${serverTime()}][ONLINE]: logged in as ${bot.user.tag} @ v${packageJSON.version}`);
     },
 };

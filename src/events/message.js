@@ -1,21 +1,18 @@
 const { Events } = require("discord.js");
 const {
   sendEmbedMessage,
+  FeedbackButtonComponent,
   serverTime,
-  FeedbackButtonComponent } = require("../utils/core");
+  localMode,
+} = require("../utils/core");
 const { version } = require("../../package.json");
 const config = require("../config.json");
-const redis = require("./database");
-const { ContextSDK } = require("@context-labs/sdk");
+const redis = require("../utils/database");
+const { context, contextID } = require("../utils/ai");
+const { discord_support_role, askai_channels } = require("../utils/env");
 
-// discord bot env
-const {
-  DISCORD_SUPPORT_ROLE_ID,
-  ASKAI_CHANNEL,
-  CONTEXT_ID } = process.env;
-const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
-
-const context = new ContextSDK({});
+const roleIDs = discord_support_role.split(",");
+const askChannelIDs = askai_channels.split(",");
 
 module.exports = {
   name: Events.MessageCreate,
@@ -38,7 +35,7 @@ module.exports = {
       message.reply({
         embeds: [sendEmbedMessage(`Latency is ${Date.now() - message.createdTimestamp}ms.`)],
       });
-      console.log(`[${serverTime()}][log]: responded to ping command`);
+      console.log(`[${serverTime()}][LOG]: responded to ping command`);
     }
 
     // check version
@@ -46,7 +43,7 @@ module.exports = {
       message.reply({
         embeds: [sendEmbedMessage(`Version: ${version}`)],
       });
-      console.log(`[${serverTime()}][log]: responded to version command in version ${version}`);
+      console.log(`[${serverTime()}][LOG]: responded to version command in version ${version}`);
     }
 
     /**
@@ -64,28 +61,41 @@ module.exports = {
           embeds: [sendEmbedMessage(config.getting_started_ai_message)],
         });
       } else {
-        if (message.channel.id === ASKAI_CHANNEL) {
+        if (askChannelIDs.includes(message.channel.id)) {
           let aiMessageLoading = await message.channel.send({
             embeds: [sendEmbedMessage(config.ai_thinking_message)],
           });
 
           await context.query({
-            botId: CONTEXT_ID,
+            botId: contextID,
             query: question,
             onComplete: async (query) => {
-              // respond to the user with the answer from the AI
-              await message.channel.messages.fetch(aiMessageLoading.id).then((msg) => {
-                msg.edit({
-                  content: `Hey <@${message.author.id}> 👇`,
-                  embeds: [
-                    sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
-                  ],
-                  components: [FeedbackButtonComponent()],
 
-                })
-                redis.set(msg.id, query._id);
+              // check if local mode is active or not
+              if(!localMode()) {
+                // respond to the user with the answer from the AI
+                await message.channel.messages.fetch(aiMessageLoading.id).then((msg) => {
+                  msg.edit({
+                    content: `Hey <@${message.author.id}> 👇`,
+                    embeds: [
+                      sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
+                    ],
+                    components: [FeedbackButtonComponent()],
+
+                  })
+                  redis.set(msg.id, query._id);
+                });
+              } else {
+                // respond to the user with the answer from the AI
+                await message.channel.messages.fetch(aiMessageLoading.id).then((msg) => {
+                  msg.edit({
+                    content: `Hey <@${message.author.id}> 👇`,
+                    embeds: [
+                      sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
+                    ]
+                  })
+                });
               }
-              );
 
             },
             onError: async (error) => {
@@ -109,7 +119,7 @@ module.exports = {
           // if the command is not from the channel
           message.reply({
             content: `Hey <@${message.author.id}> 👇`,
-            embeds: [sendEmbedMessage(`You can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Just type your question after the command \`!askai\` or \`!ask\` to get started.`)],
+            embeds: [sendEmbedMessage(config.reminder_outside_channel)],
           });
         }
       }
@@ -131,7 +141,7 @@ module.exports = {
       let mentioned = message.guild.members.cache.get(mention.users.first().id)
       if (mentioned.roles.cache.hasAny(...roleIDs) && !member.roles.cache.hasAny(...roleIDs)) {
         message.reply({
-          embeds: [sendEmbedMessage(`We have moved to a community driven discord support model.\n\nYou can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Use the command \`!askai\` or \`!ask\` followed by your question to get started.`)],
+          embeds: [sendEmbedMessage(config.response_team_mention)],
         }).then(msg => {
           setTimeout(() => msg.delete(), 60000)
         })

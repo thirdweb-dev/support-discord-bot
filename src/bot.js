@@ -1,14 +1,15 @@
 const fs = require("fs");
 const path = require("node:path");
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
-const { serverTime } = require("./utils/core");
-const redis = require("./events/database");
-
-// dot env
-require("dotenv").config();
-
-// discord bot environment vars
-const { DISCORD_BOT_TOKEN } = process.env;
+const { serverTime, localMode, debugMode } = require("./utils/core");
+const redis = require("./utils/database");
+const { 
+	discord_bot_token,
+	discord_support_role,
+	context_id,
+	askai_channels
+} = require("./utils/env");
+const config = require("./config.json");
 
 // discord bot instents and partials
 const client = new Client({
@@ -41,10 +42,25 @@ for (const file of eventFiles) {
 	}
 }
 
-//  check if the Redis is ready then log in the bot to Discord
-redis.on("ready", () => {
-  console.log(`[${serverTime()}][log]: Redis is ready!`);
-
+// check if the bot is in local development mode ignoring redis connection
+if (localMode()) {
+	// inform the admin about the mode
+	console.log(`[${serverTime()}][WARNING]: This bot is in local mode, this means it will not connect to Redis server.`);
+	if(debugMode()) {
+		console.log(`[${serverTime()}][INFO]: Debug mode enabled!\n======\nDetails Loaded...\n\nDISCORD SUPPORT ROLES: ${discord_support_role}\nDISCORD ASK CHANNELS: ${askai_channels}\nCONTEXT ID: ${context_id}\n\nLOCAL: ${config.local.toString()}\nDEBUG: ${config.debug.toString()}\n======`);
+	}
 	// log in to Discord with your client's token
-	client.login(DISCORD_BOT_TOKEN);
-});
+	client.login(discord_bot_token);
+} else {
+	//  check if the Redis is ready then log in the bot to Discord
+	redis.on("ready", () => {
+		console.log(`[${serverTime()}][LOG]: Redis is ready!`);
+
+		if(debugMode()) {
+			console.log(`[${serverTime()}][INFO]: Debug mode enabled!\n======\nDetails Loaded...\n\nDISCORD SUPPORT ROLES: ${discord_support_role}\nDISCORD ASK CHANNELS: ${askai_channels}\nCONTEXT ID: ${context_id}\n\nLOCAL: ${config.local.toString()}\nDEBUG: ${config.debug.toString()}\n======`);
+		}
+		
+		// log in to Discord with your client's token
+		client.login(discord_bot_token);
+	});
+}

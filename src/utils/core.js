@@ -1,7 +1,18 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-
+const { 
+	EmbedBuilder, 
+	ButtonBuilder, 
+	ButtonStyle, 
+	ActionRowBuilder } = require('discord.js');
 const moment = require('moment');
 const config = require('../config.json');
+const packageJSON = require('../../package.json');
+
+/**
+ * This function determines the current mode of the bot.
+ * @returns {string} The mode of the bot.
+ */
+
+const mode = () => localMode() ? (debugMode() ? "LOCAL-DEBUG" : "LOCAL") : (debugMode() ? "BUILD-DEBUG" : "BUILD");
 
 /**
  * send embed message
@@ -16,7 +27,7 @@ const sendEmbedMessage = (message) => {
 			{ name: 'Need Help?', value: 'Submit a ticket here: https://thirdweb.com/support', inline: false}
 		)
 		.setTimestamp()
-		.setFooter({ text: 'thirdweb', iconURL: 'https://ipfs.io/ipfs/QmTWMy6Dw1PDyMxHxNcmDmPE8zqFCQMfD6m2feHVY89zgu/Icon/Favicon-01.png' });
+		.setFooter({ text: `thirdweb @ ${packageJSON.version} ${mode()}`, iconURL: 'https://ipfs.io/ipfs/QmTWMy6Dw1PDyMxHxNcmDmPE8zqFCQMfD6m2feHVY89zgu/Icon/Favicon-01.png' });
 
 }
 /**
@@ -75,10 +86,28 @@ const serverTime = () => {
 	return moment.utc().utcOffset(config.utc_offset).format('M/DD/YYYY HH:mm:ss');
 }
 
+/**
+ * check if the bot is in local mode or not
+ * @returns {boolean}
+ */
+const localMode = () => {
+	return config.local ? true : false;
+}
+
+/**
+ * check if the bot is in debug mode or not
+ * @returns {boolean}
+ */
+const debugMode = () => {
+	return config.debug ? true : false;
+}
+
 module.exports = {
 	sendEmbedMessage,
 	CloseButtonComponent,
 	FeedbackButtonComponent,
 	formatTime,
-	serverTime
+	serverTime,
+	localMode,
+	debugMode
 }
