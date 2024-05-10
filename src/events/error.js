@@ -4,6 +4,6 @@ module.exports = {
     name: Events.Error,
     once: false,
     execute(error) {
-        console.log(`[${serverTime()}][error]: ${error}`);
+        console.log(`[${serverTime()}][ERROR]: ${error}`);
     },
 };

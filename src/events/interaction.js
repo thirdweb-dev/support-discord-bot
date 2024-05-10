@@ -3,10 +3,9 @@ const {
 	sendEmbedMessage,
 	serverTime,
 	CloseButtonComponent } = require("../utils/core");
-const { ContextSDK } = require("@context-labs/sdk");
-const redis = require("./database");
+const redis = require("../utils/database");
 const config = require("../config.json");
-const context = new ContextSDK({});
+const context = require("../utils/ai");
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -37,7 +36,7 @@ module.exports = {
 				await redis.del(messageId);
 
 				// log the feedback
-				console.log(`[${serverTime()}][log]: User sent a "Helpful" feedback!`);
+				console.log(`[${serverTime()}][LOG]: User sent a "Helpful" feedback!`);
 			}
 
 			if (interaction.customId === "not-helpful") {
@@ -61,7 +60,7 @@ module.exports = {
 				await redis.del(messageId);
 
 				// log the feedback
-				console.log(`[${serverTime()}][log]: User sent a "Not Helpful" feedback!`);
+				console.log(`[${serverTime()}][LOG]: User sent a "Not Helpful" feedback!`);
 			}
 		}
 	}
