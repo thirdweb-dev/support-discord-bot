@@ -8,7 +8,7 @@
     "reminder_outside_channel": "You can ask me all things thirdweb in the <#1214948528334311464> channel. Just type your question after the command \\`!askai\\` or \\`!ask\\` to get started.",
     "reminder_mention": "Hey there! \n\nKindly use `!ask` or `!askai` followed by your question and I'll help you the best I can.\n\nIf you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Thank you for choosing to build with us!",
     "response_team_mention": "We have moved to a community driven discord support model.\n\nYou can ask me all things thirdweb in the <#1214948528334311464> channel. Use the command \\`!askai\\` or \\`!ask\\` followed by your question to get started.",
-    "local": true,
-    "debug": true
+    "local": false,
+    "debug": false
   }
   

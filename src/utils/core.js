@@ -7,21 +7,12 @@ const moment = require('moment');
 const config = require('../config.json');
 const packageJSON = require('../../package.json');
 
-const mode = () => {
-	if(localMode()) {
-		if(debugMode()){
-			return "LOCAL-DEBUG";
-		} else {
-			return "LOCAL";
-		}
-	} else {
-		if(debugMode()){
-			return "BUILD-DEBUG";
-		} else {
-			return "BUILD";
-		}
-	}
-}
+/**
+ * This function determines the current mode of the bot.
+ * @returns {string} The mode of the bot.
+ */
+
+const mode = () => localMode() ? (debugMode() ? "LOCAL-DEBUG" : "LOCAL") : (debugMode() ? "BUILD-DEBUG" : "BUILD");
 
 /**
  * send embed message
