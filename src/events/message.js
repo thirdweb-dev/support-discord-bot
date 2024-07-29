@@ -109,7 +109,7 @@ module.exports = {
           // if the command is not from the channel
           message.reply({
             content: `Hey <@${message.author.id}> 👇`,
-            embeds: [sendEmbedMessage(`You can ask me all things thirdweb in the <#${ASKAI_CHANNEL}> channel. Just type your question after the command \`!askai\` or \`!ask\` to get started.`)],
+            embeds: [sendEmbedMessage(`thirdweb only provides via our official support portal (https://thirdweb.com/support), anyone saying otherwise is fake and should not be trusted`)],
           });
         }
       }
