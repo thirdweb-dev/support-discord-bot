@@ -3,19 +3,18 @@ const {
   sendEmbedMessage,
   serverTime,
   FeedbackButtonComponent } = require("../utils/core");
+
+const { getAIResponse } = require("../utils/nebula")
 const { version } = require("../../package.json");
 const config = require("../config.json");
 const redis = require("./database");
-const { ContextSDK } = require("@context-labs/sdk");
 
 // discord bot env
 const {
   DISCORD_SUPPORT_ROLE_ID,
-  ASKAI_CHANNEL,
-  CONTEXT_ID } = process.env;
+  ASKAI_CHANNEL} = process.env;
 const roleIDs = DISCORD_SUPPORT_ROLE_ID.split(",");
 
-const context = new ContextSDK({});
 
 module.exports = {
   name: Events.MessageCreate,
@@ -68,42 +67,34 @@ module.exports = {
           let aiMessageLoading = await message.channel.send({
             embeds: [sendEmbedMessage(config.ai_thinking_message)],
           });
+          let response = await getAIResponse(question)
+          await message.channel.messages.fetch(aiMessageLoading.id).then((msg) => {
+            msg.edit({
+              content: `Hey <@${message.author.id}> 👇`,
+              embeds: [
+                sendEmbedMessage(`${response.message}`),
+              ],
+              components: [FeedbackButtonComponent()],
 
-          await context.query({
-            botId: CONTEXT_ID,
-            query: question,
-            onComplete: async (query) => {
-              // respond to the user with the answer from the AI
-              await message.channel.messages.fetch(aiMessageLoading.id).then((msg) => {
-                msg.edit({
-                  content: `Hey <@${message.author.id}> 👇`,
-                  embeds: [
-                    sendEmbedMessage(`**Response:**\n${query.output.toString()}`),
-                  ],
-                  components: [FeedbackButtonComponent()],
+            })
+            const data = {
+              request_id: response.request_id,
+              session_id: response.session_id,
+            };
+            redis.set(msg.id,  JSON.stringify(data));
+          }
+          );
+          // to do
+          // send a message indicates unseccesful response from the AI
+          // await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
+          // msg.edit({
+          //   content: `Hey <@${message.author.id}> 👇`,
+          //  embeds: [
+          // sendEmbedMessage(`**Response:**\nI'm sorry, I couldn't find a response to your question. Please try again later.`),
+          //   ],
 
-                })
-                redis.set(msg.id, query._id);
-              }
-              );
-
-            },
-            onError: async (error) => {
-              console.error(error);
-
-              // send a message indicates unseccesful response from the AI
-              await message.channel.messages.fetch(aiMessageLoading.id).then((msg) =>
-                msg.edit({
-                  content: `Hey <@${message.author.id}> 👇`,
-                  embeds: [
-                    sendEmbedMessage(`**Response:**\nI'm sorry, I couldn't find a response to your question. Please try again later.`),
-                  ],
-
-                })
-              );
-
-            },
-          });
+          //  })
+          // );
 
         } else {
           // if the command is not from the channel

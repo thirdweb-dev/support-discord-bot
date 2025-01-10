@@ -1,10 +1,9 @@
 {
-    "command_prefix": "!",
-    "utc_offset": -8,
-    "ai_thinking_message": "**🤖 Beep Boop Boop Beep:** <a:load:1210497921158619136> thinking...",
-    "getting_started_ai_message": "Hello, kindly use \\`!ask\\` or \\`!askai\\` followed by your question to get started.",
-    "helpful_message": "Thank you so much for your feedback!",
-    "not_helpful_messsage": "Thank you for your valuable feedback, this will help us improve the responses of our AI assistant.\n\nIn the meantime, would you like to contact a human customer success agent? Just click the link or the button below to submit a ticket.",
-    "reminder_mention": "Hey there! If you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Thank you for choosing to build with us!"
-  }
-  
+  "command_prefix": "!",
+  "utc_offset": -8,
+  "ai_thinking_message": "Nebula is thinking...",
+  "getting_started_ai_message": "Hello, kindly use \\`!ask\\` or \\`!askai\\` followed by your question to get started.",
+  "helpful_message": "Thank you so much for your feedback!",
+  "not_helpful_messsage": "Thank you for your valuable feedback, this will help us improve the responses of our AI assistant.\n\nIn the meantime, would you like to contact a human customer success agent? Just click the link or the button below to submit a ticket.",
+  "reminder_mention": "Hey there! If you need assistance, please don't hesitate to reach out on our official support platform and create a ticket: https://thirdweb.com/support. Our dedicated team is always ready to help you out. Thank you for choosing to build with us!"
+}

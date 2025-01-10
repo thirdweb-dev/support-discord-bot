@@ -9,16 +9,27 @@ const config = require('../config.json');
  * @returns pre-defined embed style
  */
 const sendEmbedMessage = (message) => {
-	return new EmbedBuilder()
-		.setDescription(message)
-		.setColor(`#f213a4`)
-		.addFields(
-			{ name: 'Need Help?', value: 'Submit a ticket here: https://thirdweb.com/support', inline: false}
-		)
-		.setTimestamp()
-		.setFooter({ text: 'thirdweb', iconURL: 'https://ipfs.io/ipfs/QmTWMy6Dw1PDyMxHxNcmDmPE8zqFCQMfD6m2feHVY89zgu/Icon/Favicon-01.png' });
+    return new EmbedBuilder()
+        .setTitle('Nebula Response')
+        .setDescription(message)
+        .setColor('#f213a4')
+        .setThumbnail('https://ipfs.io/ipfs/QmTWMy6Dw1PDyMxHxNcmDmPE8zqFCQMfD6m2feHVY89zgu/Icon/Favicon-01.png') // Nebula thumbnail
+        .addFields(
+            { 
+                name: 'Nebula Features', 
+                value: '🔗 Proprietary Blockchain Model\n⚡ Execute Transactions with Ease\n🔐 Seamless Wallet Integration\n🛠️ Easy-to-use API\n🤖 Autonomous Agents for EVM Chains',
+                inline: false 
+            }
+        )
+        .setTimestamp()
+        .setFooter({ 
+            text: 'Powered by thirdweb - Nebula | Disclaimer: Nebula may make mistakes. Please use with discretion.',
+            iconURL: 'https://ipfs.io/ipfs/QmTWMy6Dw1PDyMxHxNcmDmPE8zqFCQMfD6m2feHVY89zgu/Icon/Favicon-01.png' 
+        });
+};
 
-}
+
+
 /**
  * close buttons
  * @param {string} message 
