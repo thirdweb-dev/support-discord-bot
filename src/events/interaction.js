@@ -5,7 +5,6 @@ const {
 	CloseButtonComponent } = require("../utils/core");
 const redis = require("../utils/database");
 const config = require("../config.json");
-const context = require("../utils/ai");
 const { setQueryFeedback } = require("../utils/ai");
 
 module.exports = {
